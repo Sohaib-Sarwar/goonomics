@@ -9,3 +9,4 @@ assets-raw/
 
 # Instagram marketing kit: kept local, never pushed
 instagram/
+*.tsbuildinfo
