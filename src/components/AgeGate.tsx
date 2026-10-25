@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { MICROCOPY } from '../lib/copy/lines'
-import { ReactionMascot } from './Mascot'
+import { ReactionArt } from './Mascot'
 import { Wordmark } from './Wordmark'
 
 /**
@@ -14,14 +14,14 @@ export function AgeGate({ onConfirm }: { onConfirm: () => void }) {
   useEffect(() => headingRef.current?.focus(), [declined])
 
   return (
-    <div className="grid-paper fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-ink px-4 py-8">
+    <div className="grid-paper scroll-quiet fixed inset-0 z-50 grid place-items-center bg-ink px-4 py-4">
       <div role="dialog" aria-modal="true" aria-labelledby="age-title" className="w-full max-w-md overflow-hidden rounded-3xl border border-line bg-panel">
         <div className="flex items-center justify-between border-b border-line px-5 py-3">
           <Wordmark size="sm" />
           <span className="rounded-full border border-coral/60 px-2.5 py-0.5 font-mono text-xs text-coral">18+</span>
         </div>
         <div className="px-5 pt-5 pb-6 sm:px-7">
-          <ReactionMascot reaction={declined ? 'party' : 'professor'} className="mx-auto mb-3 h-28 w-28" small />
+          <ReactionArt reaction={declined ? 'cheer' : 'inspect'} className="mx-auto mb-3 h-[clamp(5rem,16vh,7rem)] w-[clamp(5rem,16vh,7rem)]" />
           {declined ? (
             <>
               <h1 id="age-title" ref={headingRef} tabIndex={-1} className="font-display text-4xl font-black uppercase outline-none">

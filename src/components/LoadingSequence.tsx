@@ -2,7 +2,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MICROCOPY } from '../lib/copy/lines'
 import { loadingScript } from '../lib/copy/select'
-import { ReactionMascot } from './Mascot'
+import { ReactionArt } from './Mascot'
 
 const STEP_MS = 480
 const STEP_MS_REDUCED = 220
@@ -39,14 +39,14 @@ export function LoadingSequence({ seed, onDone }: { seed: number; onDone: () => 
   const progress = Math.round(((step + 1) / script.length) * 100)
 
   return (
-    <section aria-labelledby="loading-title" className="grid-paper flex flex-1 flex-col items-center justify-center px-4 py-6">
-      <h2 id="loading-title" ref={headingRef} tabIndex={-1} className="font-display text-4xl font-black uppercase outline-none">
+    <section aria-labelledby="loading-title" className="grid-paper scroll-quiet flex h-full min-h-0 flex-col items-center justify-center px-4 py-3">
+      <h2 id="loading-title" ref={headingRef} tabIndex={-1} className="font-display text-[clamp(1.8rem,5vh,2.6rem)] font-black uppercase outline-none">
         {MICROCOPY.loadingTitle}
         <span className="motion-safe:animate-blink text-lime">.</span>
       </h2>
 
-      <div className="relative mt-4 h-[min(16rem,34svh)] w-[min(16rem,34svh)]">
-        <ReactionMascot reaction="sweat" className="h-full w-full" />
+      <div className="relative mt-3 h-[clamp(6rem,30vh,16rem)] w-[clamp(6rem,30vh,16rem)]">
+        <ReactionArt reaction={step < 2 ? 'inspect' : step < 4 ? 'paper' : 'cry'} className="h-full w-full" />
         {!reduce && (
           <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-3xl">
             <div className="absolute inset-x-0 top-0 h-full motion-safe:animate-scan">
@@ -56,7 +56,7 @@ export function LoadingSequence({ seed, onDone }: { seed: number; onDone: () => 
         )}
       </div>
 
-      <div className="mt-5 w-full max-w-md">
+      <div className="mt-[clamp(0.5rem,2vh,1.25rem)] w-full max-w-md">
         <div className="flex items-center justify-between font-mono text-xs text-muted">
           <span>Audit progress</span>
           <span className="tabular text-lime">{progress}%</span>
@@ -64,7 +64,7 @@ export function LoadingSequence({ seed, onDone }: { seed: number; onDone: () => 
         <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-line" role="progressbar" aria-label="Audit progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
           <div className="h-full rounded-full bg-lime transition-[width] duration-500 ease-out" style={{ width: `${progress}%` }} />
         </div>
-        <div className="mt-4 min-h-[3.5rem] text-center" aria-hidden>
+        <div className="mt-3 min-h-[3rem] text-center" aria-hidden>
           <AnimatePresence mode="wait">
             <motion.p
               key={script[step]}
@@ -85,7 +85,7 @@ export function LoadingSequence({ seed, onDone }: { seed: number; onDone: () => 
           <button type="button" onClick={finish} className="press rounded-xl border border-line-strong px-5 py-2.5 font-semibold hover:border-paper">
             {MICROCOPY.skip}
           </button>
-          <p className="text-center text-xs text-faint">{MICROCOPY.loadingNote}</p>
+          <p className="text-center text-xs text-faint tiny:hidden">{MICROCOPY.loadingNote}</p>
         </div>
       </div>
     </section>

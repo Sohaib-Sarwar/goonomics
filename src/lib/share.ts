@@ -1,32 +1,6 @@
 import { INVITE } from './copy/lines'
-import { fmtBigWords, fmtDuration, fmtInt } from './format'
+import { CARD_SIZE } from './card'
 import { SITE_URL } from './site'
-import type { AuditResult } from './types'
-
-export type CardStat = 'sessions' | 'swimmers' | 'time'
-export type CardFormat = 'story' | 'square'
-
-export const CARD_SIZES: Record<CardFormat, { width: number; height: number }> = {
-  story: { width: 1080, height: 1920 },
-  square: { width: 1080, height: 1080 },
-}
-
-export const CARD_STATS: { id: CardStat; label: string }[] = [
-  { id: 'sessions', label: 'Sessions' },
-  { id: 'swimmers', label: 'Swimmers' },
-  { id: 'time', label: 'Time' },
-]
-
-export function statValue(id: CardStat, r: AuditResult): { value: string; label: string } {
-  switch (id) {
-    case 'sessions':
-      return { value: fmtInt(r.sessions), label: 'lifetime sessions, estimated' }
-    case 'swimmers':
-      return { value: fmtBigWords(r.output.spermCells), label: 'little swimmers. Cells, not kids.' }
-    case 'time':
-      return { value: fmtDuration(r.time.minutes), label: 'of modeled side quest time' }
-  }
-}
 
 /** Plain text for copy and share. Ages and raw answers are never included. */
 export function shareText(opts: { verdict: string; goi: number; caption: string }): string {
@@ -75,11 +49,11 @@ async function waitForImages(node: HTMLElement) {
   await document.fonts?.ready
 }
 
-/** Renders a card node at its native size to a PNG blob, entirely in the browser. */
-export async function renderCardPng(node: HTMLElement, format: CardFormat): Promise<Blob> {
+/** Renders the card node at its native 1080 × 1920 size to a PNG blob, entirely in the browser. */
+export async function renderCardPng(node: HTMLElement): Promise<Blob> {
   const { domToBlob } = await import('modern-screenshot')
   await waitForImages(node)
-  const { width, height } = CARD_SIZES[format]
+  const { width, height } = CARD_SIZE
   const blob = await domToBlob(node, { scale: 1, type: 'image/png', backgroundColor: '#0C0C0F', width, height })
   if (!blob) throw new Error('Rendering failed')
   return blob

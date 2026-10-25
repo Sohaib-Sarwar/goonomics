@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { ErrorText } from './ui'
 
 interface FieldProps {
   id: string
@@ -68,11 +69,7 @@ export function Field({
         />
         {suffix && <span className="flex items-center border-l border-line px-3 font-mono text-xs whitespace-nowrap text-muted">{suffix}</span>}
       </div>
-      {error && (
-        <p id={errorId} className="mt-1.5 text-sm text-coral">
-          {error}
-        </p>
-      )}
+      {error && <ErrorText id={errorId} error={error} className="mt-1.5" />}
       {children}
     </div>
   )

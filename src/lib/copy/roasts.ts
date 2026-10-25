@@ -119,7 +119,7 @@ export const ROASTS: Record<Heat, Record<Band, string[]>> = {
 export const HEADLINES: Record<Band, string[]> = {
   zero: ['The archive is empty. Suspiciously empty.', 'Clean record. The council is confused.'],
   low: ['The council has decided. Mostly fine.', 'Minor lore detected.', 'We checked. You are barely cooked.'],
-  mid: ['The lore runs deep.', 'The council has decided.', 'Chat, is this real?', 'The calculator knows too much.'],
-  high: ['The allegations are not looking good.', 'It is so over.', 'The council wants a word.'],
-  max: ['The allegations have been upgraded to a case.', 'Absolute cinema. Unfortunately.', 'Lore beyond containment.'],
+  mid: ['The lore runs deep.', 'The council has decided.', 'Chat, is this real?', 'The calculator knows too much.', 'The spreadsheet needs therapy.'],
+  high: ['The allegations are not looking good.', 'It is so over.', 'The council wants a word.', 'This case has been sent to the final boss.', 'Your alternate timeline is absolute cinema.'],
+  max: ['The allegations have been upgraded to a case.', 'Absolute cinema. Unfortunately.', 'Lore beyond containment.', 'The council has reached a deeply unnecessary conclusion.'],
 }

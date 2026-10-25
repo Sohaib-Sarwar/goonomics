@@ -41,9 +41,9 @@ describe('GOI', () => {
   })
 
   it('maps scores to bands', () => {
-    expect(goiBand(300)).toBe('Pristine record')
-    expect(goiBand(650)).toBe('Extensive lore')
-    expect(goiBand(850)).toBe('Beyond containment')
+    expect(goiBand(300)).toBe('Touch grass champion')
+    expect(goiBand(650)).toBe('Down bad researcher')
+    expect(goiBand(850)).toBe('The spreadsheet has resigned')
   })
 })
 

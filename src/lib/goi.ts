@@ -23,13 +23,13 @@ export function goiScore(result: Pick<AuditResult, 'sessions' | 'avgPerDay'>): n
   return Math.round(GOI_MIN + (GOI_MAX - GOI_MIN) * (0.75 * volume + 0.25 * intensity))
 }
 
-export const GOI_BANDS: { min: number; label: string }[] = [
-  { min: 300, label: 'Pristine record' },
-  { min: 400, label: 'Minor lore' },
-  { min: 500, label: 'Established lore' },
-  { min: 600, label: 'Extensive lore' },
-  { min: 700, label: 'Legendary lore' },
-  { min: 800, label: 'Beyond containment' },
+export const GOI_BANDS: { min: number; label: string; blurb: string }[] = [
+  { min: 300, label: 'Touch grass champion', blurb: 'Barely any lore. The council is suspicious but impressed.' },
+  { min: 400, label: 'Side quest enjoyer', blurb: 'Casual numbers. Main story still intact.' },
+  { min: 500, label: 'Lore archivist', blurb: 'Solid lore. The filing cabinet has a second drawer.' },
+  { min: 600, label: 'Down bad researcher', blurb: 'Serious documentation. The intern asked for a raise.' },
+  { min: 700, label: 'Final boss behaviour', blurb: 'Two health bars and a cutscene.' },
+  { min: 800, label: 'The spreadsheet has resigned', blurb: 'Lore beyond containment. HR is involved.' },
 ]
 
 export function goiBand(score: number): string {

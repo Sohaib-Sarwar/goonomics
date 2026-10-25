@@ -1,51 +1,72 @@
 # GOONOMICS: The Goon Audit
 
-> Your lore. Your losses. No refunds.
+> Your lore. Under investigation.
 
-A comedy calculator disguised as a scientific audit. Three steps, one dramatic verdict, a shareable
-meme card. Adults only, non graphic, honest about what the numbers mean. Runs entirely in the
-browser: no backend, no analytics, no cookies.
+A comedy calculator disguised as a scientific audit. Three steps, a live roasting auditor, one
+dramatic verdict, one meme card worth posting. Adults only, non graphic, honest about the science.
+Runs entirely in the browser: no backend, no analytics, no cookies.
 
 ![Social preview](public/og.jpg)
 
-## The flow
+## The experience
 
-| Step | Screen | What happens |
-|---|---|---|
-| 1 | **The lore** | Current age and starting age, big plus and minus inputs, live mascot reaction. |
-| 2 | **The receipts** | Sliders for daily side quests, peak down bad days, locked in days. Roast heat: Lightly cooked, Medium rare, Burnt to a crisp. Nerd settings hold session length, eras, science preset, calorie guess. |
-| 3 | **Get cooked** | Skippable 3 second audit, then the reveal: verdict, stamp, GOI, sessions, time, roast, achievements. Tabs: The damage, The swimmers, The side quest, The allegations (share studio and friend comparison). |
+| Screen | What happens |
+|---|---|
+| **Landing** | "Your lore. Under investigation." plus a three phone explainer (Drop the lore → Get the audit → Cook your friends) built in real HTML, not images. |
+| **1 The lore** | Current age and starting age, big plus and minus inputs. |
+| **2 The receipts** | Sliders for daily side quests, peak down bad days, side quests on peak days and locked in days. Roast heat: Lightly cooked, Medium rare, Burnt to a crisp. Nerd settings (session length, eras, science preset, calorie guess) live in a sheet. |
+| **Live commentary** | The auditor reacts to every value as you type or slide, with spicy lines that change with the number. |
+| **3 Get cooked** | Skippable audit theatre, then five panels: **Damage** (verdict, stamp, GOI, sessions, time, roast, achievements), **Swimmers** (the crying swimmer, reality check), **Timeline** (the alternate timeline), **Versus** (who is more cooked), **The card** (share studio). |
 
-A connected stepper shows progress the whole time. Completed steps are clickable, back keeps every
-answer, and editing receipts then re-running recalculates.
+Every screen is laid out to fit the viewport. The page never scrolls; on very short screens
+(landscape phones, 200% zoom) a panel scrolls internally with no visible scrollbar.
+
+Daily rates are capped at 17. Anything higher is rejected, never clamped, with:
+"HOW ARE YOU EVEN ALIVE? 💀 MAX IS 17. BRO, WE ARE CALCULATING, NOT SUMMONING THE FBI."
+
+## GOI: the Goonomics Index
+
+An entertainment score from 300 to 850:
+
+```
+GOI = 300 + 550 × (0.75 × volume + 0.25 × intensity)
+volume    = log10(1 + lifetime sessions) / log10(1 + 50,000), capped at 1
+intensity = log10(1 + sessions per day) / log10(1 + 4), capped at 1
+```
+
+Bands: 300 Touch grass champion, 400 Side quest enjoyer, 500 Lore archivist, 600 Down bad
+researcher, 700 Final boss behaviour, 800 The spreadsheet has resigned. Same inputs always give the
+same score; roast heat changes the jokes, never the number. It does not measure health, habits,
+fertility, intelligence or worth. Tap the GOI on the results screen for the score manual.
 
 ## Sharing
 
-| Format | Size | Notes |
-|---|---|---|
-| Story mode | 1080 × 1920 PNG | Verdict, one big stat, GOI, top achievement, roast, mascot reaction, QR, domain |
-| Square mode | 1080 × 1080 PNG | Separate two column composition, not a crop |
-| Share the lore | Web Share API | Shares the PNG plus text where the browser supports file sharing (most phones), otherwise text and link |
-| Send on WhatsApp | `https://wa.me/?text=` | Opens WhatsApp with the caption, verdict, GOI and link |
-| Copy the roast / Copy caption | Clipboard | Caption generator with a "New caption" button |
+**One master card**, 1080 × 1920, built for Stories and phones. "What are we exposing?" toggles
+nine fields on the same card: GOI, verdict, lifetime sessions, volume, swimmers, time, brainrot XP,
+roast, achievement. **Show all the receipts** selects everything; **Recommended** goes back to the
+privacy friendly default (GOI, verdict, roast, achievement). The card resizes its own type so
+nothing clips, and the export is rendered from a separate off screen copy at native size, so the
+page layout can never distort it.
 
-The user picks the big stat (sessions, swimmers or time). Ages and raw answers are never on the card
-or in shared text. Instagram does not let websites post on a user's behalf, so the flow is: download
-or share the image, then add it to a Story.
+| Action | How |
+|---|---|
+| Download the meme | PNG, 1080 × 1920, made in the browser |
+| Share the receipts | Web Share API with the PNG where supported (most phones), text and link otherwise |
+| Copy the roast / caption | Clipboard, with a caption generator |
+| WhatsApp | `https://wa.me/?text=` link with the caption and site link |
+| Compare with a friend | Opens Versus: type their GOI, get a verdict, copy or share it |
+
+The card shows **no domain text**; the QR and "Scan to get Cooked!" do the job. Ages and raw answers
+never appear on the card or in shared text.
 
 ## QR code
 
-The share cards load the QR from:
+To replace the QR code, overwrite `public/assets/goonomics-qr.png` with your new PNG using the same filename.
 
-```
-public/assets/goonomics-qr.png
-```
-
-It currently encodes `https://goonomics.vercel.app` (generated locally by `npm run qr`, verified by a
-test that decodes the file). **To use your own QR art, copy your PNG over that file with the same
-name. No code change is needed.** Keep it square with a light background and a quiet zone; the cards
-place it on a white plate. Static assets in `/assets/` are cached for an hour (with a day of
-stale while revalidate), so a replaced QR shows up quickly after redeploying.
+The placeholder encodes `https://goonomics.vercel.app` (regenerate with `npm run qr`). A test
+decodes the file to check it. Keep it square with a light background and a quiet zone; the card puts
+it on a white plate. `/assets/` files are cached for an hour, so a replacement shows up soon after
+redeploying.
 
 ## Run it
 
@@ -54,75 +75,52 @@ Requires Node 22.12+ or 24.
 ```bash
 npm install
 npm run dev        # http://localhost:5173
-npm test           # 81 tests
+npm test           # 104 tests
 npm run build      # typecheck + production build into dist/
 npm run preview    # serve dist/ on http://localhost:4173
 npm run qr         # regenerate the placeholder QR
-npm run assets     # rebuild web images from assets-source/higgsfield
+npm run assets     # rebuild mascot and hero images from assets-source/higgsfield
+npm run stickers   # cut the reaction stickers from the Higgsfield sheet
 npm run og         # rebuild the social preview image
 ```
 
 ## Deploy to Vercel
 
-Zero extra config. Import the repo in Vercel, or `vercel --prod` with the CLI. `vercel.json` sets a
-strict CSP, no framing, no referrer, immutable caching for hashed bundles in `/_app/`, and short
-caching for `/assets/`. `og:image` points at `https://goonomics.vercel.app/og.jpg`; set `SITE_URL` at
-build time if you use another domain, and update `src/lib/site.ts` plus `npm run qr` to match.
+Zero extra config: import the repo in Vercel, or `vercel --prod`. `vercel.json` sets a strict CSP,
+immutable caching for hashed bundles in `/_app/` and short caching for `/assets/`.
 
 ## Images and storage
 
-All generated artwork lives in this repo. Nothing loads from Higgsfield or any CDN at runtime.
+All artwork is in this repo. Nothing loads from Higgsfield or any CDN at runtime.
 
-- `assets-source/higgsfield/` holds the original Higgsfield downloads as lossless WebP (pixel identical).
-- `public/assets/` holds the optimized web versions built from those originals.
-- Mascot reactions (sweating, shocked, party, void, professor, stamping) are the real mascot plus
-  hand drawn SVG props and CSS motion, so they stay on model. Captions and stamps are live text.
+- `assets-source/higgsfield/`: original downloads as lossless WebP (mascot, lab hero, reaction sheet).
+- `public/assets/`: web versions built from those originals, including the five swimmer stickers
+  (cry, inspect, stare, cheer, paper).
+- Captions, stamps ("COOKED"), speech bubbles and phone mockups are live HTML so they stay sharp and
+  spelled right.
 
-See [docs/ASSETS.md](docs/ASSETS.md) for provenance and the credit ledger.
+Credit usage and provenance: [docs/ASSETS.md](docs/ASSETS.md).
 
 ## Project layout
 
 ```
 src/
-  App.tsx                 step machine: lore → receipts → loading → results
-  components/
-    Stepper.tsx           connected progress indicator
-    StepLore.tsx          step 1
-    StepReceipts.tsx      step 2 (+ AdvancedSettings.tsx for eras)
-    LoadingSequence.tsx   skippable audit theatre
-    Results.tsx           reveal, tabs, panels, friend comparison
-    ShareStudio.tsx       preview, export, share, captions
-    ShareCards.tsx        Story and Square artboards
-    ReceiptsModal.tsx     "How we cooked the numbers"
-    Mascot.tsx            mascot, reactions, stamp
-    ui.tsx                slider, segmented control, big number input, buttons
+  App.tsx                  screen flow: landing → lore → receipts → audit → results
+  components/              Landing, StepLore, StepReceipts, LiveCommentary, Stepper, LoadingSequence,
+                           Results, Timeline, Versus, CardStudio, MasterCard, ScoreManual,
+                           ReceiptsModal, Mascot (art, stickers, bubbles, stamp), ui (frame, sheet,
+                           slider, fit box)
   lib/
-    calc.ts               calculation engine (pure)
-    assumptions.ts        every constant with unit, type, source, caveat
-    goi.ts                Goonomics Index (300 to 850, entertainment only)
-    achievements.ts       fictional achievements with documented thresholds
-    validate.ts           form state → validated input
-    share.ts              PNG export, clipboard, Web Share, WhatsApp link
-    site.ts               production URL and QR path
-    copy/                 roasts by heat and band, verdicts, loading, captions, microcopy
-assets-source/higgsfield  original generated art
-scripts/                  qr, assets, og builders
-docs/                     RESEARCH.md, ASSETS.md, TESTING.md
+    calc.ts                calculation engine (pure)
+    assumptions.ts         every constant with unit, type, source and caveat
+    goi.ts, achievements.ts, timeline.ts, card.ts
+    validate.ts            form state → validated input, 17 a day cap
+    share.ts, site.ts      export, clipboard, Web Share, WhatsApp; production URL and QR path
+    copy/                  roasts by heat and band, live comments, verdicts, captions, microcopy
+docs/                      RESEARCH.md, ASSETS.md, TESTING.md
 ```
-
-## How the math works
-
-```
-years           = current age − starting age            (365.2425 days each)
-sessions / year = peak days × peak rate + locked in days × their rate + remaining days × daily rate
-volume, cells   = sessions × per session preset          (WHO 2021 median, or frequent session values)
-time            = sessions × session length
-GOI             = 300 + 550 × (0.75 × volume score + 0.25 × intensity score)
-```
-
-Same inputs, same numbers. Roast heat and "New roast" change words only.
 
 ## Disclaimer
 
-Entertainment only. Estimates come from users' own guesses, cells are not kids, nothing here is
-medical advice. If it ever feels out of control, a professional is the right person to talk to.
+For the memes, not med school. Estimates come from your own guesses, cells are not kids, and none of
+this is medical advice.

@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { ACHIEVEMENTS } from '../achievements'
 import { ACTIVITIES } from '../assumptions'
+import { DEFAULT_TIMELINE, timelineItems } from '../timeline'
+import { ALL_LIVE_LINES, liveComment } from './live'
 import { GOI_BANDS } from '../goi'
 import { defaultForm, validateForm } from '../validate'
-import { BIOLOGY, CAPTIONS, INVITE, LOADING, LORE_BUBBLES, MICROCOPY, RECEIPT_BUBBLES, SHARE_CTAS, TIME_LEAD, TIME_LINES, compareLine } from './lines'
+import { BIOLOGY, CAPTIONS, EXPOSE, INVITE, LANDING, LOADING, MICROCOPY, REALITY_CHECK, SCORE_MANUAL, SHARE_CTAS, SWIMMER_LINES, VERSUS, versusLine } from './lines'
 import { HEADLINES, HEAT_LABELS, ROASTS, type Heat } from './roasts'
 import { loadingScript, pickCaption, pickCopy } from './select'
 import { VERDICTS, bandFor, type Band } from './verdicts'
@@ -37,20 +39,34 @@ function visibleStrings(): string[] {
     ...allHeadlines,
     ...LOADING.map((l) => l.text),
     ...BIOLOGY,
-    ...Object.values(TIME_LINES),
-    TIME_LEAD,
+    ...SWIMMER_LINES,
+    REALITY_CHECK,
+    ...ALL_LIVE_LINES,
+    LANDING.title,
+    LANDING.sub,
+    LANDING.cta,
+    LANDING.how,
+    LANDING.stepsTitle,
+    LANDING.afterSteps,
+    LANDING.bubble,
+    ...LANDING.steps.flatMap((x) => [x.title, x.body]),
+    ...Object.values(VERSUS),
+    ...Object.values(SCORE_MANUAL),
+    EXPOSE.title,
+    EXPOSE.all,
+    EXPOSE.reset,
+    ...Object.values(EXPOSE.fields),
+    ...timelineItems({ time: { minutes: 1000, hours: 16, days: 1, shareOfModeledTime: 0, comparisons: [] } }, DEFAULT_TIMELINE).flatMap((t) => [t.label, t.basis]),
     ...allCaptions,
     ...SHARE_CTAS,
     INVITE,
     ...Object.values(MICROCOPY),
-    ...Object.values(LORE_BUBBLES),
-    ...Object.values(RECEIPT_BUBBLES),
     ...VERDICTS.flatMap((v) => [v.name, v.blurb, v.stamp]),
     ...Object.values(HEAT_LABELS),
     ...ACHIEVEMENTS.flatMap((a) => [a.name, a.rule]),
     ...ACTIVITIES.flatMap((a) => [a.label, a.basis]),
-    ...GOI_BANDS.map((b) => b.label),
-    ...[-200, -60, -1, 0, 1, 60, 200].map(compareLine),
+    ...GOI_BANDS.flatMap((b) => [b.label, b.blurb]),
+    ...[-200, -60, -1, 0, 1, 60, 200].flatMap((d) => Object.values(versusLine(500 + d, 500))),
     ...Object.values(bad.errors),
   ]
 }
@@ -62,7 +78,8 @@ describe('copy library', () => {
     expect(VERDICTS.length).toBeGreaterThanOrEqual(10)
     expect(LOADING.length).toBeGreaterThanOrEqual(25)
     expect(Object.keys(MICROCOPY).length).toBeGreaterThanOrEqual(20)
-    expect(Object.keys(TIME_LINES).length).toBeGreaterThanOrEqual(15)
+    expect(SWIMMER_LINES.length).toBeGreaterThanOrEqual(5)
+    expect(ALL_LIVE_LINES.length).toBeGreaterThanOrEqual(40)
     expect(BIOLOGY.length).toBeGreaterThanOrEqual(15)
     expect(allCaptions.length + SHARE_CTAS.length).toBeGreaterThanOrEqual(10)
   })
@@ -73,7 +90,7 @@ describe('copy library', () => {
   })
 
   it('has no duplicate jokes', () => {
-    const all = [...allRoasts, ...allHeadlines, ...LOADING.map((l) => l.text), ...BIOLOGY, ...allCaptions]
+    const all = [...allRoasts, ...allHeadlines, ...LOADING.map((l) => l.text), ...BIOLOGY, ...allCaptions, ...SWIMMER_LINES]
     expect(new Set(all).size).toBe(all.length)
   })
 
@@ -86,8 +103,10 @@ describe('copy library', () => {
     expect(visibleStrings().filter((s) => /\b6\.?7\b|six seven/i.test(s))).toEqual([])
   })
 
-  it('has a timeline line for every activity', () => {
-    for (const a of ACTIVITIES) expect(TIME_LINES[a.id]).toBeDefined()
+  it('keeps the required meme lines', () => {
+    expect(SWIMMER_LINES).toContain('The imaginary daycare is in shambles.')
+    expect(LANDING.title).toBe('Your lore. Under investigation.')
+    expect(ACTIVITIES.length).toBeGreaterThan(0)
   })
 })
 
@@ -128,5 +147,26 @@ describe('copy selection', () => {
     expect(script).toHaveLength(6)
     expect(new Set(script).size).toBe(6)
     expect(loadingScript(3)).toEqual(script)
+  })
+})
+
+describe('live commentary', () => {
+  it('reacts to every field and changes with the value', () => {
+    expect(liveComment('normalPerDay', '')).toMatch(/Slide it/)
+    expect(liveComment('normalPerDay', '0')).toMatch(/Zero/)
+    expect(liveComment('normalPerDay', '0.1')).not.toBe(liveComment('normalPerDay', '3'))
+    expect(liveComment('normalPerDay', '18')).toBe('HOW ARE YOU EVEN ALIVE? 💀 Max is 17.')
+    expect(liveComment('peakPerDay', '25')).toMatch(/Max is 17/)
+    expect(liveComment('startAge', '14', { currentAge: '30' })).toMatch(/16 years/)
+    expect(liveComment('startAge', '40', { currentAge: '30' })).toMatch(/Time travel/)
+    expect(liveComment('currentAge', '16')).toMatch(/birthday arc|council said/)
+    expect(liveComment('heat', '', { heat: 'burnt' })).toMatch(/Burnt/)
+    expect(liveComment('offDaysPerYear', '200')).toMatch(/200|monk/i)
+    expect(liveComment('minutes', '30')).toMatch(/episode/)
+  })
+
+  it('never leaves a placeholder unfilled', () => {
+    for (const field of ['normalPerDay', 'peakDaysPerYear', 'peakPerDay', 'offDaysPerYear'] as const)
+      for (const v of ['0', '0.2', '1', '1.5', '3', '8', '12', '16', '40', '100', '300']) expect(liveComment(field, v)).not.toMatch(/{n}/)
   })
 })

@@ -1,8 +1,8 @@
 import type { Band } from './verdicts'
 
 /**
- * Every visitor facing string that is not a roast or verdict. Short, conversational, no hyphens or
- * dashes (a test enforces it). Slang is seasoning: placed where the joke needs it.
+ * Every visitor facing string that is not a roast, verdict or live comment. Short, conversational,
+ * no hyphens or dashes (a test enforces it). Slang is seasoning: placed where the joke needs it.
  */
 
 export type LoadingStage = 'open' | 'middle' | 'close'
@@ -31,6 +31,7 @@ export const LOADING: { stage: LoadingStage; text: string }[] = [
   { stage: 'middle', text: 'Estimating aura debt' },
   { stage: 'middle', text: 'Chat is reviewing the evidence' },
   { stage: 'middle', text: 'The math is mathing. Reluctantly.' },
+  { stage: 'middle', text: 'The swimmers are lawyering up' },
   { stage: 'close', text: 'Running the final aura assessment' },
   { stage: 'close', text: 'Preparing the allegations' },
 ]
@@ -54,33 +55,27 @@ export const BIOLOGY: string[] = [
   'The Department of Fertilization was not consulted and is fine with that.',
 ]
 
-/** Alternate timeline lines keyed by activity id. {count} is pre-formatted. */
-export const TIME_LINES: Record<string, string> = {
-  tutorial: '{count} productivity tutorials, abandoned halfway. Very on brand.',
-  novel: '{count} novels. Your reading list would be terrifying.',
-  lesson: '{count} coding lessons. You would be shipping apps instead of lore.',
-  language: '{count} language lessons. Fluent in something besides brainrot.',
-  sitcom: '{count} sitcom episodes. Same show. Again.',
-  drama: '{count} prestige drama episodes. Spoilers included.',
-  pomodoro: '{count} study sessions. The tomato timer is crying.',
-  film: '{count} movies. Absolute cinema, the real kind.',
-  trilogy: '{count} extended trilogy marathons. Second breakfast included.',
-  marathon: '{count} actual marathons. Legs not included.',
-  gym: '{count} gym sessions. The gains would be unreal.',
-  podcast: '{count} podcast episodes. Still not enough to explain this.',
-  guitar: '{count} guitar sessions. Your covers would go crazy.',
-  nap: '{count} power naps. Honestly, similar outcome.',
-  flight: '{count} flights from London to New York. Window seat every time.',
-  workweek: '{count} full work weeks. An internship and a crash out.',
-}
+/** Crying swimmer meme captions. The absurd part is the baby math, never the cells. */
+export const SWIMMER_LINES: string[] = [
+  'The little swimmers have filed a complaint.',
+  'The imaginary daycare is in shambles.',
+  'The council counted the swimmers. Biology denied the baby math.',
+  'The swimmers are crying. The science department is facepalming.',
+  'Bro tried to turn cells into children. Biology said no.',
+  'The swimmers unionized. Their demand: stop calling them babies.',
+  'Breaking: zero daycares were harmed in this calculation.',
+  'The baby math failed peer review. Spectacularly.',
+  'Swimmer HR is overwhelmed. Please hold.',
+  'The swimmers saw the number and started crying in 4K.',
+]
 
-export const TIME_LEAD = 'Your alternate timeline finished {count} {label}, assuming {each} each. Whether you would have is between you and the council.'
+export const REALITY_CHECK = 'Reality check: sperm cells are single cells, not babies. Only one can fertilize an egg, and only if an egg is there. No daycare was ever involved.'
 
-export const SHARE_CTAS = ['Drop this in the GC', 'Send the allegations', 'Your bro is next', 'Let the council rate you']
+export const SHARE_CTAS = ['Drop this in the GC', 'Send the allegations', 'Tag your final boss', 'Let your friends cook']
 
 export const INVITE = 'Bro, I got audited by GOONOMICS. Drop your lore and let us compare allegations.'
 
-/** Short captions for Stories and posts, by band plus a general pool. */
+/** Short captions, by band plus a general pool. "POV" score reveals are a current format. */
 export const CAPTIONS: Record<Band | 'any', string[]> = {
   any: [
     'New lore just dropped.',
@@ -92,7 +87,9 @@ export const CAPTIONS: Record<Band | 'any', string[]> = {
     'Got audited by a tiny lab creature. Would not recommend. Would recommend.',
     'Patch notes available upon request.',
     'The allegations have been formally filed.',
-    'Your turn. The council is waiting.',
+    'POV: the council just read my file.',
+    'POV: you asked a calculator for honesty.',
+    'Who is more cooked? Prove me wrong.',
   ],
   zero: ['Clean record. Touch grass champion.', 'The council found nothing. Suspicious.'],
   low: ['Minor lore. Major aura.', 'Barely cooked and proud of it.'],
@@ -101,21 +98,73 @@ export const CAPTIONS: Record<Band | 'any', string[]> = {
   max: ['Final boss energy, officially documented.', 'The council has blocked me.'],
 }
 
-/** Mascot speech bubbles on the input steps. */
-export const LORE_BUBBLES = {
-  empty: 'Two numbers. That is all I need.',
-  zero: 'The lore starts today? Bold.',
-  short: 'Short lore. Efficient.',
-  medium: '{years} years of lore. The archive is warming up.',
-  long: '{years} years? Get the big filing cabinet.',
+/** Landing page and the three step explainer. */
+export const LANDING = {
+  title: 'Your lore. Under investigation.',
+  sub: 'One calculator. Questionable statistics. Zero need to explain yourself.',
+  cta: 'Run my audit',
+  how: 'Show me how it works',
+  stepsTitle: 'Three steps. Zero shame.',
+  steps: [
+    { title: 'Drop the lore', body: 'Ages and rough numbers. Sliders do the work.' },
+    { title: 'Get the audit', body: 'The auditor crunches it. On your device.' },
+    { title: 'Cook your friends', body: 'One card. A QR. The group chat does the rest.' },
+  ],
+  afterSteps: 'Let me cook',
+  bubble: 'Be honest. Your spreadsheet cannot snitch.',
 }
 
-export const RECEIPT_BUBBLES = {
-  empty: 'Slide it. Nobody is watching. Except me.',
-  zero: 'Zero? The council will verify that.',
-  low: 'Casual. The spreadsheet can breathe.',
-  mid: 'Oh. Okay. Writing that down.',
-  high: 'I need a bigger clipboard.',
+/** "Who is more cooked?" verdicts. Higher GOI means more cooked. Jokes target the audit, not people. */
+export function versusLine(mine: number, theirs: number): { headline: string; line: string } {
+  const diff = mine - theirs
+  if (diff === 0) return { headline: 'It is a tie.', line: 'Both spreadsheets need help. The council demands a rematch.' }
+  if (diff >= 150) return { headline: 'You are more cooked.', line: 'Not even close. The council has ruled in your favour. Sort of.' }
+  if (diff >= 40) return { headline: 'You are more cooked.', line: 'The council has ruled in your favour. Your spreadsheet disagrees.' }
+  if (diff > 0) return { headline: 'You edge it.', line: 'Basically lore twins. You win by a whisker and a spreadsheet.' }
+  if (diff > -40) return { headline: 'They edge it.', line: 'Basically lore twins. They win by a whisker. Rematch energy.' }
+  if (diff > -150) return { headline: 'Your friend is more cooked.', line: 'Your friend has been promoted to department head.' }
+  return { headline: 'Your friend is way more cooked.', line: 'Different league. Send them a glass of water and a hug.' }
+}
+
+export const VERSUS = {
+  title: 'Who is more cooked?',
+  you: 'You',
+  them: 'Your friend',
+  help: 'Type the GOI from their card. Nothing is saved or sent.',
+  label: 'Their GOI',
+  run: 'Settle it',
+  copy: 'Copy the verdict',
+  copied: 'Verdict copied. Start the drama.',
+  invalid: 'A GOI is a whole number from 300 to 850. Check their card.',
+  fine: 'Fictional scores. Nobody here is unhealthy, just audited.',
+  empty: 'Waiting for their number. The council is patient.',
+}
+
+/** The score manual. Same score for the same inputs; roast heat never touches it. */
+export const SCORE_MANUAL = {
+  title: 'So how cooked are you?',
+  kicker: 'The score manual',
+  formula: 'GOI = 300 + 550 × (75% how many sessions in total + 25% how often per day). Both are on a log scale, capped at 50,000 sessions and 4 a day.',
+  same: 'Same inputs, same score. Roast heat changes the jokes, never the number.',
+  disclaimer: 'Entertainment only. It does not measure health, habits, fertility, intelligence or personal worth.',
+}
+
+/** Card field labels for "What are we exposing?". */
+export const EXPOSE = {
+  title: 'What are we exposing?',
+  all: 'Show all the receipts',
+  reset: 'Recommended',
+  fields: {
+    goi: 'GOI score',
+    verdict: 'Verdict',
+    sessions: 'Lifetime sessions',
+    volume: 'Volume',
+    swimmers: 'Swimmers',
+    time: 'Time',
+    xp: 'Brainrot XP',
+    roast: 'The roast',
+    achievement: 'Achievement',
+  },
 }
 
 export const MICROCOPY = {
@@ -123,29 +172,28 @@ export const MICROCOPY = {
   stepReceipts: 'The receipts',
   stepCooked: 'Get cooked',
 
-  loreTitle: 'The council wants a word.',
+  loreTitle: 'The council needs receipts.',
   loreSub: 'Your lore. Your losses. No refunds.',
-  loreHelp: 'Be honest. The spreadsheet cannot snitch.',
   currentAge: 'Current age',
   currentAgeHint: 'Adults only. Whole years.',
   startAge: 'Where the lore began',
-  startAgeHint: 'The age it started. Rough guess is fine.',
+  startAgeHint: 'The age it started. Rough guess.',
   loreNext: 'Next: drop the receipts',
 
   receiptsTitle: 'Drop the receipts.',
-  receiptsSub: 'Rough averages. Nobody remembers exact numbers, and it would be weird if you did.',
+  receiptsSub: 'Rough averages. Nobody remembers exact numbers.',
   daily: 'Average daily side quests',
-  dailyHint: 'On a normal day',
+  dailyHint: 'Normal day',
   peakDays: 'Peak down bad days',
   peakDaysHint: 'Per year',
-  peakRate: 'Side quests on those days',
+  peakRate: 'Side quests on peak days',
   peakRateHint: 'Per day',
-  lockedDays: 'Days you were actually locked in',
-  lockedDaysHint: 'Zero activity days per year. Exams, monk mode, family trips.',
+  lockedDays: 'Locked in days',
+  lockedDaysHint: 'Zero activity days a year',
   heat: 'How cooked do you want to be?',
   heatHint: 'Changes the roast, not the math.',
   nerdSettings: 'Nerd settings',
-  nerdSettingsHint: 'Session length, eras, science presets, calories',
+  nerdSettingsHint: 'Session length, eras, science, calories',
   sessionLength: 'Average session length',
   eras: 'Split the lore into eras',
   erasHelp: 'Different eras, different energy. Years outside every era count as zero.',
@@ -154,57 +202,64 @@ export const MICROCOPY = {
   removeEra: 'Remove era',
   preset: 'Science preset',
   calories: 'Add a calorie guess',
-  caloriesHelp: 'Nobody has measured this. If you add it, the number is your guess and we label it that way.',
+  caloriesHelp: 'Nobody has measured this. If you add it, it is labelled as your guess.',
   lockedRate: 'Not fully locked in on those days?',
   receiptsNext: 'Show me the damage',
   receiptsBack: 'Go back to my lore',
+  done: 'Done',
 
   loadingTitle: 'Auditing',
   skip: 'Skip the drama',
-  loadingNote: 'The math finished instantly on your device. This part is just theatre.',
+  loadingNote: 'The math finished instantly on your device. This part is theatre.',
 
-  tabDamage: 'The damage',
-  tabSwimmers: 'The swimmers',
-  tabSideQuest: 'The side quest',
-  tabAllegations: 'The allegations',
+  tabDamage: 'Damage',
+  tabSwimmers: 'Swimmers',
+  tabTimeline: 'Timeline',
+  tabVersus: 'Versus',
+  tabCard: 'The card',
   editReceipts: 'Edit my receipts',
   startOver: 'Start over',
   newRoast: 'New roast',
-  gci: 'GOI',
-  goiLong: 'The Goonomics Index',
-  goiNote: 'A made up score from 300 to 850. Fun only.',
+  goiLong: 'Goonomics Index',
+  scoreManual: 'Score manual',
   achievements: 'Unlocked',
-  noDiagnosis: 'Entertainment estimates from your own guesses. Not a diagnosis. If it ever feels out of control, talk to a professional.',
+  noDiagnosis: 'Entertainment estimates from your own guesses. Not a diagnosis.',
+  sessionsLabel: 'Lifetime sessions',
+  timeLabel: 'Time invested',
 
-  storyMode: 'Story mode',
-  squareMode: 'Square mode',
-  copyRoast: 'Copy the roast',
-  shareLore: 'Share the lore',
+  swimmersTitle: 'The swimmer ledger',
+  swimmerCount: 'Swimmers, estimated',
+  volume: 'Volume, estimated',
+  receipts: 'See the receipts',
+
+  timelineTitle: 'Bro, what could you have done instead?',
+  timelineShort: 'The alternate timeline',
+  timelineSub: 'Same hours, different arc. Imaginary, obviously.',
+  tweak: 'Tweak the assumptions',
+  scientist: 'Scientist arc: theoretically available. Actual motivation: not included.',
+  fictional: 'fictional',
+
   download: 'Download the meme',
+  shareReceipts: 'Share the receipts',
+  copyRoast: 'Copy the roast',
+  compareFriend: 'Compare with a friend',
   copyCaption: 'Copy caption',
   newCaption: 'New caption',
-  whatsapp: 'Send on WhatsApp',
+  whatsapp: 'WhatsApp',
   copiedRoast: 'Roast copied. Use responsibly.',
   copiedCaption: 'Caption copied. Go post it.',
   downloaded: 'Meme saved. Post it before you overthink it.',
   shared: 'Shared. The council thanks you.',
   shareFailed: 'Your browser said no. Download it instead.',
   rendering: 'Cooking the image',
-  cardStat: 'Big number on the card',
-  cardPrivacy: 'Your age and answers never go on the card.',
-
-  compareTitle: 'Rate your friend',
-  compareHelp: 'Type the GOI from their card. Nothing gets saved or sent.',
-  compareLabel: 'Their GOI',
-  compareRun: 'Compare',
+  enlarge: 'Tap to enlarge',
 
   infoButton: 'How we cooked the numbers',
   close: 'Close',
   imageFallback: 'The auditor stepped out. The math did not.',
 
   ageGateTitle: 'Adults only past this point.',
-  ageGateBody:
-    'GOONOMICS is a comedy calculator about self reported masturbation stats. Not explicit, but adults only. We do not check ID and nothing leaves this tab.',
+  ageGateBody: 'GOONOMICS is a comedy calculator about self reported masturbation stats. Not explicit, but adults only. We do not check ID and nothing leaves this tab.',
   ageGateYes: 'I am 18 or older',
   ageGateNo: 'Take me somewhere wholesome',
   ageGateDeclinedTitle: 'Respect. Truly.',
@@ -212,17 +267,7 @@ export const MICROCOPY = {
   ageGateMisclick: 'Wait, I misclicked',
 
   cardKicker: 'The council has decided.',
-  cardCta: 'Get audited',
-  cardDisclaimer: 'Entertainment estimate from self reported guesses. Cells are not kids. Not medical advice.',
-}
-
-/** Head to head verdicts, by score difference (you minus them). */
-export function compareLine(diff: number): string {
-  if (diff >= 120) return 'Not even close. Your lore is heavier. Congrats, sort of.'
-  if (diff >= 40) return 'You out lored them. Nobody wins here, but you win more.'
-  if (diff > 0) return 'Neck and neck, and you edge it. Lore twins, basically.'
-  if (diff === 0) return 'Identical scores. The council demands a recount.'
-  if (diff > -40) return 'Neck and neck, and they edge it. Respectfully, close call.'
-  if (diff > -120) return 'They out lored you. Their spreadsheet is in worse shape.'
-  return 'They are in a different league. Send them a glass of water.'
+  cardScan: 'Scan to get Cooked!',
+  cardDisclaimer: 'For the memes, not med school. These stats are guesses, cells ain’t kids, and this is not medical advice. Bro, it is not that deep.',
+  officialAudit: 'Official audit',
 }

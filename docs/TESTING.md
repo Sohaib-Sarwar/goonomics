@@ -1,54 +1,69 @@
-# Testing report (GOONOMICS 2.0)
+# Testing report (responsive QA and 2.1 redesign)
 
 Run on 2026-10-25, Windows 11, Node 24.12, Chrome via browser automation against the production
-build (`vite preview`).
+build (`vite preview`). Viewports were tested with exact size iframes on the real build.
 
-## Automated: `npm test` → 81 / 81 passing
+## Automated: `npm test` → 104 / 104 passing
 
 | Suite | Tests | Covers |
 |---|---|---|
-| `src/lib/calc.test.ts` | 28 | engine math: peak and locked in days carved out once, reduced rate, zero, fractional, leap year averaging, presets, ranges, huge inputs, eras, overlaps, determinism, tiers |
-| `src/lib/validate.test.ts` | 19 | parsing, missing values, 18+, contradictions, limits, eras |
-| `src/lib/format.test.ts` | 6 | number, volume and duration formatting |
-| `src/lib/goi.test.ts` | 7 | GOI bounds (300 to 850), monotonic, deterministic, bands; achievements thresholds including monk mode alone at zero |
-| `src/lib/copy/copy.test.ts` | 10 | minimum counts, every heat × band has roasts, no duplicate jokes, **no hyphens or dashes in any visitor facing string** (roasts, microcopy, verdicts, achievements, activities, validation errors), no "67" meme, seeded picks, roast seed changes only the roast |
-| `src/lib/qr.test.ts` | 3 | QR at `public/assets/goonomics-qr.png`, decodes to `https://goonomics.vercel.app`, still decodes at 210 px |
-| `src/App.test.tsx` | 8 | age gate and decline; stepper current step; step 1 blocks invalid input; back and forward keep answers; full run shows 3,652 sessions, correct verdict, GOI in range, correct achievements, 420 billion swimmers; **no fetch calls**; heat changes roast but not sessions or GOI; share cards show the QR from the documented path, the domain and the real value (2,191); Story 1080 × 1920 and Square 1080 × 1080; WhatsApp link encodes the site URL and no ages; caption copy; friend comparison; edit keeps answers; start over clears; receipts dialog opens and closes with Escape |
+| `calc.test.ts` | 28 | engine math, no double counting, leap years, presets, eras, overlaps, determinism |
+| `validate.test.ts` | 19 | parsing, missing values, 18+, contradictions, eras |
+| `features.test.ts` | 19 | **17 a day cap** for 0, 1, 16, 17, 0.5, 1,5, 17.01, 18, 25, negatives, blanks, junk, peak rate and eras, no silent clamping; largest input stays finite; alternate timeline counts equal modeled minutes ÷ stated durations and follow edited assumptions; calorie line labelled as a guess; card default selection, stats from the real result, type shrinking with more fields; Versus winner, loser, tie |
+| `copy.test.ts` | 12 | minimum counts, roasts for every heat × band, no duplicates, **no hyphens or dashes in any visitor facing string** (including live comments, validation errors, Versus, score manual, card labels, timeline labels), no "67" meme, seeded picks, live comments react to every field and fill every placeholder |
+| `goi.test.ts` | 7 | GOI bounds, monotonic, deterministic, bands; achievement thresholds |
+| `qr.test.ts` | 3 | QR file at `public/assets/goonomics-qr.png` decodes to `https://goonomics.vercel.app`, also at 210 px |
+| `format.test.ts` | 6 | number, volume, duration formatting |
+| `App.test.tsx` | 10 | age gate; landing and how it works sheet; live comments while typing; step 1 blocks bad timelines; **over limit message on 25 and submission blocked**; back keeps answers; correct numbers, GOI, achievements, score manual, swimmers, timeline; **no fetch calls**; heat changes the roast but not sessions or GOI; card uses the QR path, shows no domain, default hides stats, Show all exposes them, Recommended hides them again, roast copy excludes ages; Versus verdict and invalid GOI; edit and start over; methodology sheet |
 
-All UI tests run with `prefers-reduced-motion: reduce` emulated. `npm run typecheck` (TypeScript 7,
-strict) and `npm run build` are clean.
+UI tests run with `prefers-reduced-motion: reduce` emulated. `npm run typecheck` and `npm run build`
+are clean; the main bundle is 467 KB (152 KB gzipped) and the results chunk loads during the audit.
 
-## Manual: real browser, production build
+## Responsive QA
 
-| Check | Result |
+A harness walked the whole journey at every size and measured: page scroll, panels that needed
+their internal fallback scroll, horizontal overflow, clipped text, and truncated text.
+
+| Viewport | Result |
 |---|---|
-| Step 1 fits one viewport | ✅ desktop 1440 × 900: 900/900; phone 390 × 844: 845/844 |
-| Step 2 fits one viewport | ✅ desktop 900/900 after moving sliders into a 2 × 2 grid; phone scrolls (991/844) with the main action pinned in a bottom bar |
-| Loading | ✅ fits both viewports, progress, skip, step 3 marked current |
-| Results reveal | ✅ desktop 900/900 with verdict, stamp, GOI, sessions, time, roast, heat, achievements; phone scrolls with a bottom action bar |
-| Numbers | ✅ 27/14, 1.2 a day, 40 peak days at 3, 25 locked in: 6,244 sessions = 13 × (300.24 × 1.2 + 40 × 3), 65 days, GOI 705, six achievements matching their rules |
-| Tabs | ✅ all four panels render; arrow keys move between tabs |
-| Story export | ✅ 1080 × 1920 PNG, QR inside the exported image decodes to `https://goonomics.vercel.app` at full and half size |
-| Square export | ✅ 1080 × 1080 PNG, QR decodes at full and half size |
-| Exported cards inspected visually | ✅ after fixing a stamp hidden behind the mascot and a dead gap in the Story layout |
-| Real values on cards | ✅ 6,244 and 13,111 runs showed their own values, file numbers and GOI |
-| Mobile overflow | ✅ fixed a transient sideways scroll during the stamp animation (`overflow-x-clip`) |
-| Network and storage | ✅ every request same origin; no cookies; only `goonomics:age-ok` in session storage |
-| Console | ✅ no errors or warnings during the full flow |
+| 320 × 700 | ✅ all screens fit (only while the over limit error is showing does step 2 need 11 px of quiet scroll) |
+| 360 × 800 | ✅ all screens fit |
+| 390 × 844 | ✅ |
+| 430 × 932 | ✅ |
+| 768 × 1024 | ✅ |
+| 1024 × 768 | ✅ |
+| 1280 × 800 | ✅ |
+| 1440 × 900 | ✅ |
+| 1920 × 1080 | ✅ |
+| 844 × 390 (landscape phone) | Page never scrolls; step 2, Damage, Timeline, Versus and the card need 16 to 52 px of internal scroll with no visible scrollbar |
+| 640 × 400 (1280 × 800 at 200% zoom) | Same: page never scrolls; panels need 10 to 67 px of internal scroll |
 
-## Bugs found and fixed in this pass
+No horizontal overflow and no truncated text at any size after the fixes below.
 
-1. Step 2 and results overflowed a 900 px desktop viewport.
-2. Mobile result tabs scrolled sideways and hid two tabs; now a 2 × 2 grid.
-3. Stamp crushed the verdict into a narrow column on phones.
-4. Card stamps rendered behind the mascot's face.
-5. Story card had a large empty gap above the footer.
-6. Info button had a doubled accessible name.
-7. Four captions duplicated headlines; one validation message had a hyphen. Both caught by tests.
+## Bugs found and fixed
+
+1. **Page scrolled on phones:** fixed position action bars plus bottom padding grew the page. Replaced by a viewport locked shell (`h-dvh`) with pinned action bars inside each screen.
+2. **Sideways scroll at 320 px:** a speech bubble positioned at `right: 78%` hung off the left edge. Bubbles now sit in the layout flow.
+3. **Mascot and stickers ignored their position:** components forced `relative` over a caller's `absolute`, so the landing sticker fell behind the explainer. Fixed at the source.
+4. **Truncated numbers:** "17,…" sessions, "2.01 trill…", "31.5…", and on the share card "2.01 trilli…" and "182 days, 8…". Values now size to their length or split number and scale word.
+5. **Card preview did not match the export:** the preview lived inside a button, which centred its text. The card now sets its own alignment.
+6. **Step 2 did not fit 320 to 390 px:** Nerd settings moved into the action bar, sliders get shorter on short screens, subtitles hide when space is tight.
+7. Card chips and buttons truncated at 320 px; the share studio had an empty grid cell; caption cut to one line.
+8. Timeline fictional meters truncated their labels on phones.
+9. A copy file was overwritten on disk mid session (an editor or sync conflict); restored, and your manual edits ("Scan to get Cooked!" and the new disclaimer) were kept.
+
+## Export checks (real PNGs from the production build)
+
+| Case | Size | QR decodes to production URL | Domain text on card | Overflow |
+|---|---|---|---|---|
+| Recommended fields | 1080 × 1920 | ✅ | none | none |
+| Show all the receipts | 1080 × 1920 | ✅ | none | none, after the stat sizing fix |
+| Longest verdict, Burnt to a crisp, all fields | 1080 × 1920 | ✅ | none | none |
+
+Console: no errors or warnings during a full run. No broken images. Every request same origin, no cookies.
 
 ## Not tested
 
-- Real phones (checked in 390 × 844 frames in desktop Chrome), Safari and Firefox.
-- The native share sheet and WhatsApp app opening (the link format is tested, the apps were not launched).
-- The live deployment: the site has not been deployed from here, so the QR has been verified to encode
-  the intended URL, not to reach a live page.
+- Real devices, Safari and Firefox (desktop Chrome with exact size frames).
+- Native share sheet and WhatsApp app launch (link format tested, apps not opened).
+- The live deployment, so the QR is verified to encode the URL, not to reach a live page.

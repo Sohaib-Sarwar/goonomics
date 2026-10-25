@@ -1,5 +1,11 @@
 @import 'tailwindcss';
 
+/* Height aware breakpoints: every screen is laid out to fit the viewport without page scrolling. */
+@custom-variant short (@media (max-height: 820px));
+@custom-variant tiny (@media (max-height: 700px));
+@custom-variant flat (@media (max-height: 520px));
+@custom-variant tall (@media (min-height: 900px));
+
 @theme {
   --color-ink: #0c0c0f;
   --color-panel: #17171c;
@@ -121,12 +127,26 @@
 }
 
 @layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
   html {
     color-scheme: dark;
     background: var(--color-ink);
     -webkit-text-size-adjust: 100%;
+    /* The app shell fits the viewport; the page itself never scrolls. */
+    overflow: hidden;
   }
   body {
+    overflow: hidden;
+    overscroll-behavior: none;
     background: var(--color-ink);
     color: var(--color-paper);
     font-family: var(--font-sans);
@@ -150,6 +170,16 @@
 }
 
 @layer components {
+  /* Last resort scrolling for a panel on a very short screen, with no visible scrollbar. */
+  .scroll-quiet {
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    overscroll-behavior: contain;
+  }
+  .scroll-quiet::-webkit-scrollbar {
+    display: none;
+  }
   .grid-paper {
     background-image:
       linear-gradient(to right, rgb(255 255 255 / 0.035) 1px, transparent 1px),
@@ -208,6 +238,11 @@
   }
   .slider:focus-visible {
     outline: none;
+  }
+  @media (max-height: 820px) {
+    .slider {
+      height: 22px;
+    }
   }
   .slider:focus-visible::-webkit-slider-thumb {
     outline: 2px solid var(--color-paper);

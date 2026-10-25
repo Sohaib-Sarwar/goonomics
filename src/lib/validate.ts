@@ -34,12 +34,16 @@ export interface FormState {
   heat: Heat
 }
 
+/** Shown when a daily rate goes above 17. The short form is used on narrow screens. */
+export const OVER_LIMIT = 'HOW ARE YOU EVEN ALIVE? 💀 MAX IS 17. BRO, WE ARE CALCULATING, NOT SUMMONING THE FBI.'
+export const OVER_LIMIT_SHORT = 'HOW ARE YOU EVEN ALIVE? 💀 Max is 17.'
+
 export const LIMITS = {
   minAge: 18,
   maxAge: 110,
   minStartAge: 10,
-  maxPerDay: 20,
-  maxPeakPerDay: 30,
+  maxPerDay: 17,
+  maxPeakPerDay: 17,
   maxMinutes: 240,
   maxEras: 8,
   maxLabel: 40,
@@ -159,7 +163,7 @@ const rateRules = {
     messages: {
       missing: 'Slide it or type it. Zero counts.',
       low: 'Negative side quests are not a thing. We checked.',
-      high: `Above ${LIMITS.maxPerDay} a day? Use your average, not your personal record.`,
+      high: OVER_LIMIT,
     },
   },
   peak: {
@@ -168,7 +172,7 @@ const rateRules = {
     messages: {
       missing: 'How many on a peak day?',
       low: 'Negative side quests are not a thing.',
-      high: `Capped at ${LIMITS.maxPeakPerDay}. The side quest has a difficulty limit.`,
+      high: OVER_LIMIT,
     },
   },
   peakDays: {

@@ -190,3 +190,17 @@ Tone rules for 2.0: interface labels stay short and literal with one joke at mos
 and captions carry the heat. Three roast libraries (Lightly cooked, Medium rare, Burnt to a crisp)
 cover five result bands each, 63 roasts total, and never touch bodies, health, masculinity,
 fertility or worth. No hyphens or dashes in visitor facing copy, enforced by a test.
+
+## 6. 2.1 research (2026-10-25, second pass)
+
+| Finding | Source | What changed |
+|---|---|---|
+| "POV" score reveal videos ("POV: you scored 21.2% on your test") are a live format | [TikTok test scores results trend](https://www.tiktok.com/discover/test-scores-results-trend) | POV captions in the caption generator |
+| "Your cooked" self roasting memes are a TikTok discover category | [TikTok: your cooked](https://www.tiktok.com/discover/your-cooked) | "Get cooked" step name, "Who is more cooked?" comparison |
+| Aura farming, delulu, crash out, brainrot and the "Gen Z stare" appear in current 2026 glossaries | [Slangwise 2026 watchlist](https://slangwise.com/35-new-slang-words-taking-over-the-internet-right-now-2026-watchlist/), [SheKnows 2026 teen slang](https://www.sheknows.com/parenting/slideshow/1234883077/teen-slang-2026/) | Used sparingly in live comments; the side eye sticker plays the stare |
+| "67" stays the most disliked term in the Preply survey | [VICE](https://www.vice.com/en/article/gen-z-hates-these-popular-words-for-being-insanely-cringe/) | Still banned by test |
+| No dated Know Your Meme entry for a 2025 to 2026 crying reaction trend; crying reactions remain generic reaction staples | [Know Your Meme: crying duck](https://knowyourmeme.com/memes/crying-duck-meme) | The crying swimmer is an original sticker, not a copy of any template |
+
+The live commentary library holds 83 lines across age, years of lore, daily rate, peak days,
+peak rate, locked in days, roast heat and session length. Each range has a small pool and the pick is
+stable for a given value, so comments change exactly when the numbers do.

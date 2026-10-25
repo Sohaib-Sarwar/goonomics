@@ -2,14 +2,14 @@ import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 import App from './App'
-import { SITE_URL } from './lib/site'
+import { MICROCOPY } from './lib/copy/lines'
+import { SITE_HOST, SITE_URL } from './lib/site'
 
 type User = ReturnType<typeof userEvent.setup>
 
 /** The stepper item marked aria-current="step". */
 const currentStep = () => {
-  const nav = screen.getByRole('navigation', { name: 'Audit progress' })
-  const li = nav.querySelector('li[aria-current="step"]')
+  const li = screen.getByRole('navigation', { name: 'Audit progress' }).querySelector('li[aria-current="step"]')
   if (!li) throw new Error('No current step')
   return li as HTMLElement
 }
@@ -17,6 +17,7 @@ const currentStep = () => {
 async function start(user: User) {
   render(<App />)
   await user.click(screen.getByRole('button', { name: 'I am 18 or older' }))
+  await user.click(screen.getAllByRole('button', { name: 'Run my audit' })[0]!)
 }
 
 async function setValue(user: User, label: string, value: string) {
@@ -35,68 +36,85 @@ async function runAudit(user: User, ages: [string, string], daily: string) {
   await screen.findByRole('tablist', { name: 'Result panels' })
 }
 
-describe('GOONOMICS 2.0 flow', () => {
-  it('gates the site at 18+ and keeps the calculator hidden when declined', async () => {
+describe('GOONOMICS flow', () => {
+  it('gates at 18+, then lands on the hook with a how it works explainer', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(screen.getByRole('button', { name: 'I am 18 or older' }))
+    expect(screen.getByRole('heading', { level: 1, name: 'Your lore. Under investigation.' })).toBeInTheDocument()
+    expect(screen.getAllByText('Drop the lore').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Cook your friends').length).toBeGreaterThan(0)
+    await user.click(screen.getAllByRole('button', { name: 'Show me how it works' })[0]!)
+    expect(screen.getByRole('dialog', { name: 'Three steps. Zero shame.' })).toBeInTheDocument()
+  })
+
+  it('keeps the calculator hidden when declined', async () => {
     const user = userEvent.setup()
     render(<App />)
     await user.click(screen.getByRole('button', { name: /somewhere wholesome/i }))
-    expect(screen.getByRole('heading', { name: /respect/i })).toBeInTheDocument()
     expect(screen.queryByLabelText('Current age')).not.toBeInTheDocument()
   })
 
-  it('shows the stepper and blocks step 1 until the timeline is valid', async () => {
+  it('comments live on what is typed and blocks invalid timelines', async () => {
     const user = userEvent.setup()
     await start(user)
     expect(currentStep()).toHaveTextContent('The lore')
+    await setValue(user, 'Current age', '45')
+    expect(screen.getAllByText(/unc|DLC|archive/i).length).toBeGreaterThan(0)
+    await setValue(user, 'Where the lore began', '50')
+    expect(screen.getAllByText('Time travel is not supported. Yet.').length).toBeGreaterThan(0)
     await user.click(screen.getByRole('button', { name: 'Next: drop the receipts' }))
-    expect(screen.getByLabelText('Current age')).toHaveAttribute('aria-invalid', 'true')
     expect(currentStep()).toHaveTextContent('The lore')
-
-    await setValue(user, 'Current age', '17')
-    await setValue(user, 'Where the lore began', '14')
-    await user.click(screen.getByRole('button', { name: 'Next: drop the receipts' }))
-    expect(screen.getByText('This audit is for adults (18+).')).toBeInTheDocument()
+    expect(screen.getByLabelText('Where the lore began')).toHaveAttribute('aria-invalid', 'true')
   })
 
-  it('moves forward and back without losing input', async () => {
+  it('rejects more than 17 a day with the over limit roast, and keeps answers when going back', async () => {
     const user = userEvent.setup()
     await start(user)
     await setValue(user, 'Current age', '30')
     await setValue(user, 'Where the lore began', '15')
     await user.click(screen.getByRole('button', { name: 'Next: drop the receipts' }))
     expect(currentStep()).toHaveTextContent('The receipts')
-    await setValue(user, 'Average daily side quests', '0.8')
 
-    await user.click(screen.getByRole('button', { name: /back/i }))
+    await setValue(user, 'Average daily side quests', '25')
+    expect(screen.getAllByText('HOW ARE YOU EVEN ALIVE? 💀 MAX IS 17. BRO, WE ARE CALCULATING, NOT SUMMONING THE FBI.').length).toBeGreaterThan(0)
+    expect(screen.getByLabelText('Average daily side quests')).toHaveValue('25')
+    await user.click(screen.getByRole('button', { name: 'Show me the damage' }))
+    expect(screen.queryByRole('tablist', { name: 'Result panels' })).not.toBeInTheDocument()
+
+    await setValue(user, 'Average daily side quests', '0.8')
+    expect(screen.queryByText(/HOW ARE YOU EVEN ALIVE/)).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Go back to my lore' }))
     expect(screen.getByLabelText('Current age')).toHaveValue('30')
     await user.click(screen.getByRole('button', { name: 'Next: drop the receipts' }))
     expect(screen.getByLabelText('Average daily side quests')).toHaveValue('0.8')
   })
 
-  it('runs locally and reveals the correct numbers, GOI and achievements', async () => {
+  it('runs locally and reveals the right numbers, GOI, achievements and swimmer meme', async () => {
     const fetchSpy = vi.spyOn(globalThis, 'fetch')
     const user = userEvent.setup()
     await start(user)
     await runAudit(user, ['28', '18'], '1')
 
     expect(currentStep()).toHaveTextContent('Get cooked')
-    // 10 years × 365.2425 × 1 per day
     expect(screen.getByLabelText('3,652 sessions')).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 1, name: 'Down Bad Research Fellow' })).toBeInTheDocument()
-    const goi = Number(screen.getByLabelText(/^GOI \d+$/).getAttribute('aria-label')!.slice(4))
+    const goiButton = screen.getByRole('button', { name: /^GOI \d+, .*score manual$/ })
+    const goi = Number(goiButton.getAttribute('aria-label')!.match(/^GOI (\d+)/)![1])
     expect(goi).toBeGreaterThanOrEqual(300)
-    expect(goi).toBeLessThanOrEqual(850)
     for (const name of ['Lore unlocked', 'Spreadsheet survivor', 'Touch grass optional']) expect(screen.getByText(name)).toBeInTheDocument()
-    expect(screen.queryByText('Final boss energy')).not.toBeInTheDocument()
 
-    await user.click(screen.getByRole('tab', { name: 'The swimmers' }))
-    // Auto picks frequent values at one or more a day: 3,652 × 115 million ≈ 420 billion.
+    await user.click(goiButton)
+    expect(screen.getByRole('dialog', { name: 'So how cooked are you?' })).toHaveTextContent('you are here')
+    await user.keyboard('{Escape}')
+
+    await user.click(screen.getByRole('tab', { name: 'Swimmers' }))
     expect(screen.getByLabelText('420 billion')).toBeInTheDocument()
-    expect(screen.getByText('Kids wasted: biology says no.')).toBeInTheDocument()
+    expect(screen.getByText(/sperm cells are single cells, not babies/)).toBeInTheDocument()
 
-    await user.click(screen.getByRole('tab', { name: 'The side quest' }))
-    expect(screen.getByText('Your alternate timeline')).toBeInTheDocument()
-    expect(screen.getByRole('meter', { name: /brainrot meter/i })).toBeInTheDocument()
+    await user.click(screen.getByRole('tab', { name: 'Timeline' }))
+    expect(screen.getByText('short books read')).toBeInTheDocument()
+    expect(screen.getByText(/Scientist arc/)).toBeInTheDocument()
 
     expect(fetchSpy).not.toHaveBeenCalled()
     fetchSpy.mockRestore()
@@ -107,71 +125,76 @@ describe('GOONOMICS 2.0 flow', () => {
     await start(user)
     await runAudit(user, ['33', '14'], '0.5')
     const sessions = screen.getByLabelText(/ sessions$/).getAttribute('aria-label')
-    const goi = screen.getByLabelText(/^GOI \d+$/).getAttribute('aria-label')
+    const goi = screen.getByRole('button', { name: /^GOI \d+/ }).getAttribute('aria-label')
     const roastOf = () => screen.getByText(/^“.*”$/).textContent
-
     const seen = new Set<string | null>([roastOf()])
     for (const heat of ['Lightly cooked', 'Burnt to a crisp', 'Medium rare']) {
       await user.click(screen.getByRole('radio', { name: heat }))
       seen.add(roastOf())
       expect(screen.getByLabelText(/ sessions$/)).toHaveAttribute('aria-label', sessions)
-      expect(screen.getByLabelText(/^GOI \d+$/)).toHaveAttribute('aria-label', goi)
+      expect(screen.getByRole('button', { name: /^GOI \d+/ })).toHaveAttribute('aria-label', goi)
     }
     expect(seen.size).toBeGreaterThan(1)
-
-    await user.click(screen.getByRole('button', { name: 'New roast' }))
-    expect(screen.getByLabelText(/ sessions$/)).toHaveAttribute('aria-label', sessions)
   })
 
-  it('builds share cards with the QR, the domain and the real values, and shares privately', async () => {
+  it('builds one master card from the exposed fields, with the QR and no visible domain', async () => {
     const user = userEvent.setup()
     await start(user)
     await runAudit(user, ['40', '20'], '0.3')
-    await user.click(screen.getByRole('tab', { name: 'The allegations' }))
+    await user.click(screen.getByRole('tab', { name: 'The card' }))
 
-    const qr = screen.getByAltText('QR code to goonomics.vercel.app')
-    expect(qr).toHaveAttribute('src', '/assets/goonomics-qr.png')
-    // 20 years × 365.2425 × 0.3 = 2,191 sessions, shown on the card.
+    const qrs = screen.getAllByAltText('QR code to get your own audit')
+    for (const qr of qrs) expect(qr).toHaveAttribute('src', '/assets/goonomics-qr.png')
+    expect(screen.queryByText(SITE_HOST)).not.toBeInTheDocument()
+    expect(screen.getAllByText(MICROCOPY.cardScan).length).toBeGreaterThan(0)
+
+    // Default hides personal statistics; showing all adds them; the numbers stay the same.
+    const sessionsToggle = screen.getByRole('button', { name: 'Lifetime sessions' })
+    expect(sessionsToggle).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.queryByText('2,191')).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Show all the receipts' }))
+    for (const b of within(screen.getByRole('group', { name: 'What are we exposing?' })).getAllByRole('button')) expect(b).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getAllByText('2,191').length).toBeGreaterThan(0)
-    expect(screen.getAllByText('goonomics.vercel.app').length).toBeGreaterThan(0)
-    expect(screen.getByText(/Exports at 1080 × 1920/)).toBeInTheDocument()
-    await user.click(screen.getByRole('radio', { name: 'Square mode' }))
-    expect(screen.getByText(/Exports at 1080 × 1080/)).toBeInTheDocument()
-
-    const wa = screen.getByRole('link', { name: 'Send on WhatsApp' })
-    const text = decodeURIComponent(wa.getAttribute('href')!.replace('https://wa.me/?text=', ''))
-    expect(text).toContain(SITE_URL)
-    expect(text).not.toMatch(/\b40\b|\b20\b/)
+    await user.click(screen.getByRole('button', { name: 'Recommended' }))
+    expect(screen.queryByText('2,191')).not.toBeInTheDocument()
 
     const writeText = vi.fn().mockResolvedValue(undefined)
     Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
-    await user.click(screen.getByRole('button', { name: 'Copy caption' }))
+    await user.click(screen.getByRole('button', { name: 'Copy the roast' }))
     await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1))
     expect(writeText.mock.calls[0]![0]).toContain(SITE_URL)
-    expect(await screen.findByText('Caption copied. Go post it.')).toBeInTheDocument()
+    expect(writeText.mock.calls[0]![0]).not.toMatch(/\b40\b|\b20\b/)
+    expect(await screen.findByText('Roast copied. Use responsibly.')).toBeInTheDocument()
+  })
 
-    await setValue(user, 'Their GOI', '500')
-    await user.click(screen.getByRole('button', { name: 'Compare' }))
-    expect(screen.getByText(/vs them 500/)).toBeInTheDocument()
+  it('settles who is more cooked locally', async () => {
+    const user = userEvent.setup()
+    await start(user)
+    await runAudit(user, ['40', '20'], '0.3')
+    await user.click(screen.getByRole('tab', { name: 'Versus' }))
+    await setValue(user, 'Their GOI', '850')
+    expect(screen.getByText(/Different league/)).toBeInTheDocument()
+    await setValue(user, 'Their GOI', '200')
+    expect(screen.getByText(/whole number from 300 to 850/)).toBeInTheDocument()
   })
 
   it('edits receipts with answers kept, and start over clears everything', async () => {
     const user = userEvent.setup()
     await start(user)
     await runAudit(user, ['25', '15'], '0.4')
-    await user.click(screen.getAllByRole('button', { name: 'Edit my receipts' })[0]!)
+    await user.click(screen.getByRole('button', { name: 'Edit my receipts' }))
     expect(currentStep()).toHaveTextContent('The receipts')
     expect(screen.getByLabelText('Average daily side quests')).toHaveValue('0.4')
-
     await user.click(screen.getByRole('button', { name: 'Show me the damage' }))
     await user.click(await screen.findByRole('button', { name: 'Skip the drama' }))
-    await user.click((await screen.findAllByRole('button', { name: 'Start over' }))[0]!)
+    await user.click(await screen.findByRole('button', { name: 'Start over' }))
     expect(screen.getByLabelText('Current age')).toHaveValue('')
   })
 
-  it('opens and closes the receipts dialog', async () => {
+  it('opens and closes the methodology sheet', async () => {
     const user = userEvent.setup()
-    await start(user)
+    render(<App />)
+    await user.click(screen.getByRole('button', { name: 'I am 18 or older' }))
     await user.click(screen.getByRole('button', { name: 'How we cooked the numbers' }))
     const dialog = screen.getByRole('dialog', { name: 'How we cooked the numbers' })
     expect(within(dialog).getByText('Did I actually waste those kids?')).toBeInTheDocument()

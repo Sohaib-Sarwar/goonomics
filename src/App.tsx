@@ -1,19 +1,24 @@
-import { useCallback, useMemo, useState } from 'react'
+import { Suspense, lazy, useCallback, useMemo, useState } from 'react'
 import { AgeGate } from './components/AgeGate'
+import { Landing } from './components/Landing'
 import { LoadingSequence } from './components/LoadingSequence'
 import { ReceiptsModal } from './components/ReceiptsModal'
-import { Results } from './components/Results'
 import { SiteHeader } from './components/SiteHeader'
 import { StepLore } from './components/StepLore'
 import { StepReceipts } from './components/StepReceipts'
 import { Stepper, type StepId } from './components/Stepper'
 import { unlockedAchievements } from './lib/achievements'
 import { calculateAudit } from './lib/calc'
+import { RECOMMENDED_FIELDS, type CardField } from './lib/card'
 import { hashString, pickCopy } from './lib/copy/select'
 import { VERDICTS } from './lib/copy/verdicts'
 import { fmtInt, fmtNum } from './lib/format'
+import { DEFAULT_TIMELINE, type TimelineAssumptions } from './lib/timeline'
 import type { AuditInput, AuditResult } from './lib/types'
 import { defaultForm, validateForm, type Errors, type FormState } from './lib/validate'
+
+// The results screen (panels, card studio, image export) loads while the audit animation plays.
+const Results = lazy(() => import('./components/Results').then((m) => ({ default: m.Results })))
 
 const AGE_KEY = 'goonomics:age-ok'
 const STEP1_KEYS = ['currentAge', 'startAge']
@@ -29,7 +34,7 @@ function readAgeOk(): boolean {
 /** Science inputs only: roast heat is excluded so it can never change a number or a seed. */
 const scienceKey = (f: FormState) => JSON.stringify({ ...f, heat: undefined })
 
-type Screen = 1 | 2 | 'loading' | 3
+type Screen = 'landing' | 1 | 2 | 'loading' | 3
 interface Audit {
   input: AuditInput
   result: AuditResult
@@ -41,11 +46,13 @@ const focusFirstInvalid = () => requestAnimationFrame(() => document.querySelect
 export default function App() {
   const [ageOk, setAgeOk] = useState(readAgeOk)
   const [form, setForm] = useState<FormState>(defaultForm)
-  const [screen, setScreen] = useState<Screen>(1)
+  const [screen, setScreen] = useState<Screen>('landing')
   const [touched, setTouched] = useState<Set<string>>(() => new Set())
   const [attempted, setAttempted] = useState<{ 1: boolean; 2: boolean }>({ 1: false, 2: false })
   const [audit, setAudit] = useState<Audit | null>(null)
   const [reroll, setReroll] = useState(0)
+  const [fields, setFields] = useState<CardField[]>(RECOMMENDED_FIELDS)
+  const [timeline, setTimeline] = useState<TimelineAssumptions>(DEFAULT_TIMELINE)
   const [receipts, setReceipts] = useState<{ open: boolean; science: boolean }>({ open: false, science: false })
 
   const confirmAge = () => {
@@ -60,13 +67,15 @@ export default function App() {
   const update = useCallback((patch: Partial<FormState>) => setForm((f) => ({ ...f, ...patch })), [])
   const touch = useCallback((key: string) => setTouched((t) => (t.has(key) ? t : new Set(t).add(key))), [])
 
-  // Live validation; errors are shown once a field was touched or its step was submitted.
+  // Live validation; errors show once a field was touched or its step was submitted.
   const live = useMemo(() => validateForm(form), [form])
   const visible = (step: 1 | 2): Errors =>
     Object.fromEntries(
       Object.entries(live.errors).filter(([k]) => {
         const inStep = STEP1_KEYS.includes(k) === (step === 1)
-        return inStep && (attempted[step] || touched.has(k))
+        // Over the limit or obviously wrong values show immediately while typing.
+        const typed = k in form && (form as unknown as Record<string, unknown>)[k] !== '' && (form as unknown as Record<string, unknown>)[k] !== defaultForm()[k as keyof FormState]
+        return inStep && (attempted[step] || touched.has(k) || (step === 2 && typed))
       }),
     )
 
@@ -76,7 +85,12 @@ export default function App() {
     setAttempted((a) => ({ ...a, 1: true }))
     if (STEP1_KEYS.some((k) => live.errors[k])) return focusFirstInvalid()
     setScreen(2)
-    window.scrollTo({ top: 0 })
+  }
+
+  const compute = (f: FormState) => {
+    const v = validateForm(f)
+    if (!v.input) return null
+    return { input: v.input, result: calculateAudit(v.input), key: scienceKey(f) }
   }
 
   const runAudit = () => {
@@ -85,16 +99,23 @@ export default function App() {
       setScreen(1)
       return focusFirstInvalid()
     }
-    if (!live.input) return focusFirstInvalid()
     try {
-      const result = calculateAudit(live.input)
-      setAudit({ input: live.input, result, key: scienceKey(form) })
+      const next = compute(form)
+      if (!next) return focusFirstInvalid()
+      setAudit(next)
       setReroll(0)
       setScreen('loading')
-      window.scrollTo({ top: 0 })
     } catch {
       focusFirstInvalid()
     }
+  }
+
+  /** Session length can change on the results screen; the audit re-runs instantly. */
+  const setMinutes = (m: string) => {
+    const f = { ...form, minutesPerSession: m }
+    setForm(f)
+    const next = compute(f)
+    if (next) setAudit(next)
   }
 
   const finishLoading = useCallback(() => setScreen(3), [])
@@ -113,10 +134,11 @@ export default function App() {
     setTouched(new Set())
     setAttempted({ 1: false, 2: false })
     setAudit(null)
+    setFields(RECOMMENDED_FIELDS)
     setScreen(1)
   }
 
-  const seed = audit ? hashString(JSON.stringify(audit.input)) : 0
+  const seed = audit ? hashString(JSON.stringify({ ...audit.input, minutesPerSession: 0 })) : 0
   const copy = useMemo(() => {
     if (!audit) return null
     const r = audit.result
@@ -129,24 +151,27 @@ export default function App() {
 
   if (!ageOk) return <AgeGate onConfirm={confirmAge} />
 
-  const stepperCurrent: StepId = screen === 'loading' ? 3 : screen
+  const stepperCurrent: StepId | null = screen === 'landing' ? null : screen === 'loading' ? 3 : screen
 
   return (
-    <div className="flex min-h-svh flex-col">
+    <div className="flex h-dvh flex-col overflow-hidden">
       <a href="#main" className="sr-only z-50 rounded bg-lime px-3 py-2 text-ink focus:not-sr-only focus:fixed focus:top-2 focus:left-2">
         Skip to content
       </a>
-      <SiteHeader onInfo={() => setReceipts({ open: true, science: false })} />
-      <div className="pt-3 pb-2 sm:pt-4">
-        <Stepper current={stepperCurrent} done={resultsFresh && screen !== 'loading'} onGo={goStep} />
-      </div>
-      <main id="main" className="flex flex-1 flex-col overflow-x-clip">
+      <SiteHeader onInfo={() => setReceipts({ open: true, science: false })} onHome={() => setScreen('landing')} />
+      {stepperCurrent !== null && (
+        <div className="shrink-0 pt-2 pb-1 tiny:pt-1">
+          <Stepper current={stepperCurrent} done={resultsFresh && screen !== 'loading'} onGo={goStep} />
+        </div>
+      )}
+      <main id="main" className="relative min-h-0 flex-1 overflow-hidden">
+        {screen === 'landing' && <Landing onStart={() => setScreen(1)} />}
         {screen === 1 && <StepLore form={form} errors={visible(1)} update={update} touch={touch} onNext={nextFromLore} />}
-        {screen === 2 && (
-          <StepReceipts form={form} errors={visible(2)} warnings={live.warnings} update={update} touch={touch} onBack={() => setScreen(1)} onNext={runAudit} />
-        )}
+        {screen === 2 && <StepReceipts form={form} errors={visible(2)} warnings={live.warnings} update={update} touch={touch} onBack={() => setScreen(1)} onNext={runAudit} />}
         {screen === 'loading' && <LoadingSequence seed={seed} onDone={finishLoading} />}
+        {screen === 'loading' && <PrefetchResults />}
         {screen === 3 && audit && copy && (
+          <Suspense fallback={<LoadingSequence seed={seed} onDone={() => undefined} />}>
           <Results
             result={audit.result}
             verdict={VERDICTS[audit.result.tier]!}
@@ -154,15 +179,28 @@ export default function App() {
             heat={form.heat}
             achievements={unlockedAchievements(audit.result, audit.input)}
             seed={seed}
+            fields={fields}
+            setFields={setFields}
+            timeline={timeline}
+            setTimeline={setTimeline}
+            minutes={form.minutesPerSession}
+            setMinutes={setMinutes}
             onHeat={(heat) => update({ heat })}
             onReroll={() => setReroll((n) => n + 1)}
             onEdit={() => setScreen(2)}
             onRestart={restart}
             onReceipts={() => setReceipts({ open: true, science: true })}
           />
+          </Suspense>
         )}
       </main>
       <ReceiptsModal open={receipts.open} showScience={receipts.science} onClose={() => setReceipts({ open: false, science: false })} />
     </div>
   )
+}
+
+/** Starts downloading the results chunk as soon as the audit animation begins. */
+function PrefetchResults() {
+  void import('./components/Results')
+  return null
 }
