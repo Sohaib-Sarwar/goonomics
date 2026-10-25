@@ -41,9 +41,10 @@ describe('GOI', () => {
   })
 
   it('maps scores to bands', () => {
-    expect(goiBand(300)).toBe('Touch grass champion')
-    expect(goiBand(650)).toBe('Down bad researcher')
-    expect(goiBand(850)).toBe('The spreadsheet has resigned')
+    expect(goiBand(300)).toBe('Touch Grass Certified')
+    expect(goiBand(650)).toBe('Aura Legend')
+    expect(goiBand(720)).toBe('Peak Gooner')
+    expect(goiBand(850)).toBe('Ultimate Gooner')
   })
 })
 

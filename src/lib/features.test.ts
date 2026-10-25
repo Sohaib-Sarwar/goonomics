@@ -97,8 +97,8 @@ describe('master card', () => {
   const r = calculateAudit(base)
 
   it('defaults to a privacy conscious selection', () => {
-    expect(RECOMMENDED_FIELDS).toEqual(['goi', 'verdict', 'roast', 'achievement'])
-    expect(CARD_FIELDS).toHaveLength(9)
+    expect(RECOMMENDED_FIELDS).toEqual(['goi', 'badge', 'verdict', 'roast', 'achievement'])
+    expect(CARD_FIELDS).toHaveLength(10)
   })
 
   it('formats each stat from the real result', () => {
@@ -122,5 +122,35 @@ describe('who is more cooked', () => {
     expect(versusLine(500, 700).headline).toMatch(/way more cooked/)
     expect(versusLine(600, 600).headline).toBe('It is a tie.')
     expect(versusLine(610, 600).headline).toMatch(/You edge it/)
+  })
+})
+
+describe('rank badges', () => {
+  it('maps GOI to the badge ladder at the documented thresholds', async () => {
+    const { rankBadge, nextRank, RANK_BADGES } = await import('./badges')
+    expect(rankBadge(300).name).toBe('Touch Grass Certified')
+    expect(rankBadge(479).name).toBe('Side Quest Rookie')
+    expect(rankBadge(480).name).toBe('Aura Farmer')
+    expect(rankBadge(560).name).toBe('Lore Lord')
+    expect(rankBadge(640).name).toBe('Aura Legend')
+    expect(rankBadge(720).name).toBe('Peak Gooner')
+    expect(rankBadge(800).name).toBe('Ultimate Gooner')
+    expect(rankBadge(850).name).toBe('Ultimate Gooner')
+    expect(nextRank(700)).toEqual({ badge: RANK_BADGES[5], points: 20 })
+    expect(nextRank(820)).toBeNull()
+    const mins = RANK_BADGES.map((b) => b.min)
+    expect([...mins].sort((a, b) => a - b)).toEqual(mins)
+  })
+
+  it('puts every achievement in a known category', async () => {
+    const { ACHIEVEMENTS, BADGE_CATEGORIES } = await import('./achievements')
+    const ids = new Set(BADGE_CATEGORIES.map((c) => c.id))
+    for (const a of ACHIEVEMENTS) expect(ids.has(a.category)).toBe(true)
+    for (const c of BADGE_CATEGORIES) expect(ACHIEVEMENTS.some((a) => a.category === c.id)).toBe(true)
+  })
+
+  it('names the rank badge in shared text', async () => {
+    const { shareText } = await import('./share')
+    expect(shareText({ verdict: 'X', goi: 725, caption: 'c' })).toContain('rank badge: Peak Gooner')
   })
 })

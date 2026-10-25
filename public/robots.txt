@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://goonomics.vercel.app/sitemap.xml

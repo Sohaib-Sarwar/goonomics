@@ -34,17 +34,21 @@ volume    = log10(1 + lifetime sessions) / log10(1 + 50,000), capped at 1
 intensity = log10(1 + sessions per day) / log10(1 + 4), capped at 1
 ```
 
-Bands: 300 Touch grass champion, 400 Side quest enjoyer, 500 Lore archivist, 600 Down bad
-researcher, 700 Final boss behaviour, 800 The spreadsheet has resigned. Same inputs always give the
+Every GOI unlocks a **rank badge**: 300 Touch Grass Certified, 400 Side Quest Rookie, 480 Aura
+Farmer, 560 Lore Lord, 640 Aura Legend, 720 Peak Gooner, 800 Ultimate Gooner. Each has its own
+emblem (`public/assets/badge-<id>.webp`) and shows on the Damage tab, the card and Versus.
+
+Achievements are grouped into six **badge categories**: Grind, Time sink, Frequency, Lore,
+Discipline and Chaos. Same inputs always give the
 same score; roast heat changes the jokes, never the number. It does not measure health, habits,
 fertility, intelligence or worth. Tap the GOI on the results screen for the score manual.
 
 ## Sharing
 
 **One master card**, 1080 × 1920, built for Stories and phones. "What are we exposing?" toggles
-nine fields on the same card: GOI, verdict, lifetime sessions, volume, swimmers, time, brainrot XP,
-roast, achievement. **Show all the receipts** selects everything; **Recommended** goes back to the
-privacy friendly default (GOI, verdict, roast, achievement). The card resizes its own type so
+ten fields on the same card: GOI, rank badge, verdict, lifetime sessions, volume, swimmers, time,
+brainrot XP, roast, achievement. **Show all the receipts** selects everything; **Recommended** goes back to the
+privacy friendly default (GOI, rank badge, verdict, roast, achievement). The card resizes its own type so
 nothing clips, and the export is rendered from a separate off screen copy at native size, so the
 page layout can never distort it.
 
@@ -75,13 +79,14 @@ Requires Node 22.12+ or 24.
 ```bash
 npm install
 npm run dev        # http://localhost:5173
-npm test           # 104 tests
+npm test           # 107 tests
 npm run build      # typecheck + production build into dist/
 npm run preview    # serve dist/ on http://localhost:4173
 npm run qr         # regenerate the placeholder QR
 npm run assets     # rebuild mascot and hero images from assets-source/higgsfield
 npm run stickers   # cut the reaction stickers from the Higgsfield sheet
 npm run og         # rebuild the social preview image
+npm run badges     # rebuild the rank badge emblems from assets-source/higgsfield
 ```
 
 ## Deploy to Vercel
@@ -95,7 +100,7 @@ All artwork is in this repo. Nothing loads from Higgsfield or any CDN at runtime
 
 - `assets-source/higgsfield/`: original downloads as lossless WebP (mascot, lab hero, reaction sheet).
 - `public/assets/`: web versions built from those originals, including the five swimmer stickers
-  (cry, inspect, stare, cheer, paper).
+  (cry, inspect, stare, cheer, paper) and the seven rank badge emblems.
 - Captions, stamps ("COOKED"), speech bubbles and phone mockups are live HTML so they stay sharp and
   spelled right.
 
@@ -107,17 +112,17 @@ Credit usage and provenance: [docs/ASSETS.md](docs/ASSETS.md).
 src/
   App.tsx                  screen flow: landing → lore → receipts → audit → results
   components/              Landing, StepLore, StepReceipts, LiveCommentary, Stepper, LoadingSequence,
-                           Results, Timeline, Versus, CardStudio, MasterCard, ScoreManual,
+                           Results, Timeline, Versus, CardStudio, MasterCard, ScoreManual, Badge,
                            ReceiptsModal, Mascot (art, stickers, bubbles, stamp), ui (frame, sheet,
                            slider, fit box)
   lib/
     calc.ts                calculation engine (pure)
     assumptions.ts         every constant with unit, type, source and caveat
-    goi.ts, achievements.ts, timeline.ts, card.ts
+    goi.ts, badges.ts, achievements.ts, timeline.ts, card.ts
     validate.ts            form state → validated input, 17 a day cap
     share.ts, site.ts      export, clipboard, Web Share, WhatsApp; production URL and QR path
     copy/                  roasts by heat and band, live comments, verdicts, captions, microcopy
-docs/                      RESEARCH.md, ASSETS.md, TESTING.md
+docs/                      RESEARCH.md, ASSETS.md, TESTING.md, SEO.md (keywords, Google Ads policy)
 ```
 
 ## Disclaimer

@@ -1,33 +1,72 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-US">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>GOONOMICS: The Goon Audit</title>
+    <title>How Cooked Are You? The Goon Audit Calculator | GOONOMICS</title>
     <meta
       name="description"
-      content="Your lore. Your losses. The spreadsheet is cooked. An extremely unnecessary, scientifically honest investigation into your self-reported lifetime brainrot statistics. 18+."
+      content="Drop your lore, get your GOI score and unlock rank badges from Touch Grass Certified to Ultimate Gooner. The internet's most unnecessary audit. 18+, free, private."
     />
+    <link rel="canonical" href="%OG_ORIGIN%/" />
     <meta name="theme-color" content="#0C0C0F" />
     <meta name="color-scheme" content="dark" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="preload" as="image" href="/assets/goonomics-hero-1600.webp" imagesrcset="/assets/goonomics-hero-960.webp 960w, /assets/goonomics-hero-1600.webp 1600w, /assets/goonomics-hero-2048.webp 2048w" imagesizes="100vw" fetchpriority="high" />
+    <link rel="manifest" href="/manifest.webmanifest" />
 
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="GOONOMICS: The Goon Audit" />
-    <meta property="og:description" content="Your lore. Your losses. The spreadsheet is cooked." />
+    <meta property="og:site_name" content="GOONOMICS" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="%OG_ORIGIN%/" />
+    <meta property="og:title" content="How cooked are you? Take the Goon Audit" />
+    <meta property="og:description" content="Get your GOI score, unlock your rank badge and roast your group chat. 18+." />
     <meta property="og:image" content="%OG_ORIGIN%/og.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="GOONOMICS: your lore, under investigation" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="GOONOMICS: The Goon Audit" />
-    <meta name="twitter:description" content="We did the math. The math needs therapy." />
+    <meta name="twitter:title" content="How cooked are you? Take the Goon Audit" />
+    <meta name="twitter:description" content="Get your GOI score, unlock your rank badge and roast your group chat. 18+." />
     <meta name="twitter:image" content="%OG_ORIGIN%/og.jpg" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "GOONOMICS: The Goon Audit",
+        "url": "%OG_ORIGIN%/",
+        "description": "A comedy calculator for adults. Enter rough lifetime estimates, get a GOI score from 300 to 850, a rank badge and a shareable meme card. Runs entirely in the browser.",
+        "applicationCategory": "EntertainmentApplication",
+        "operatingSystem": "Any",
+        "inLanguage": "en-US",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "audience": { "@type": "PeopleAudience", "suggestedMinAge": 18 }
+      }
+    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Static first paint and crawlable content. React replaces this with the same landing on load. -->
+      <main style="min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 24px; background: #0c0c0f; color: #f5f5f5; font-family: 'Hanken Grotesk Variable', system-ui, sans-serif">
+        <div style="max-width: 720px">
+          <p style="font-family: 'IBM Plex Mono', monospace; color: #9898a5; font-size: 12px">GOONOMICS · 18+</p>
+          <h1 style="font-family: 'Big Shoulders Display Variable', 'Arial Narrow', sans-serif; font-weight: 900; text-transform: uppercase; font-size: clamp(2.4rem, 9vw, 5.5rem); line-height: 0.88; margin: 8px 0 12px">Your lore. Under investigation.</h1>
+          <p style="font-size: 1.1rem; color: #d6d6dc">One calculator. Questionable statistics. Zero need to explain yourself.</p>
+          <h2 style="font-size: 1rem; margin-top: 24px">How cooked are you? Three steps.</h2>
+          <ol style="color: #b8b8c2; line-height: 1.6">
+            <li>Drop the lore: your age and rough numbers.</li>
+            <li>Get the audit: a GOI score from 300 to 850, worked out on your device.</li>
+            <li>Cook your friends: one meme card with a QR, then compare scores in Versus.</li>
+          </ol>
+          <h2 style="font-size: 1rem; margin-top: 16px">Rank badges</h2>
+          <p style="color: #b8b8c2">Touch Grass Certified, Side Quest Rookie, Aura Farmer, Lore Lord, Aura Legend, Peak Gooner and Ultimate Gooner, plus achievement badges for grind, time sink, frequency, lore, discipline and chaos.</p>
+          <p style="color: #6b6b78; font-size: 0.85rem; margin-top: 16px">Adults only. Entertainment, not medical advice. Your answers never leave your device. <a href="/privacy.html" style="color: #c5ff5c">Privacy</a></p>
+        </div>
+      </main>
+    </div>
     <noscript>GOONOMICS needs JavaScript to run the audit. All math happens on your device.</noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>

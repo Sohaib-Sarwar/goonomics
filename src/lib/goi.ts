@@ -1,3 +1,4 @@
+import { RANK_BADGES } from './badges'
 import type { AuditResult } from './types'
 
 /**
@@ -23,14 +24,8 @@ export function goiScore(result: Pick<AuditResult, 'sessions' | 'avgPerDay'>): n
   return Math.round(GOI_MIN + (GOI_MAX - GOI_MIN) * (0.75 * volume + 0.25 * intensity))
 }
 
-export const GOI_BANDS: { min: number; label: string; blurb: string }[] = [
-  { min: 300, label: 'Touch grass champion', blurb: 'Barely any lore. The council is suspicious but impressed.' },
-  { min: 400, label: 'Side quest enjoyer', blurb: 'Casual numbers. Main story still intact.' },
-  { min: 500, label: 'Lore archivist', blurb: 'Solid lore. The filing cabinet has a second drawer.' },
-  { min: 600, label: 'Down bad researcher', blurb: 'Serious documentation. The intern asked for a raise.' },
-  { min: 700, label: 'Final boss behaviour', blurb: 'Two health bars and a cutscene.' },
-  { min: 800, label: 'The spreadsheet has resigned', blurb: 'Lore beyond containment. HR is involved.' },
-]
+/** Score bands are the rank badges (src/lib/badges.ts): one ladder, one set of names. */
+export const GOI_BANDS: { min: number; label: string; blurb: string }[] = RANK_BADGES.map((r) => ({ min: r.min, label: r.name, blurb: r.tagline }))
 
 export function goiBand(score: number): string {
   let label = GOI_BANDS[0]!.label

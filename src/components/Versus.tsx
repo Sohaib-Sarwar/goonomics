@@ -5,6 +5,8 @@ import { GOI_MAX, GOI_MIN, goiBand } from '../lib/goi'
 import { canNativeShare, copyText, nativeShare } from '../lib/share'
 import { SITE_URL } from '../lib/site'
 import { parseNumber } from '../lib/validate'
+import { rankBadge } from '../lib/badges'
+import { BadgeEmblem } from './Badge'
 import { ReactionArt } from './Mascot'
 
 /**
@@ -20,7 +22,7 @@ export function Versus({ goi }: { goi: number }) {
   const result = theirs !== null ? versusLine(goi, theirs) : null
   const invalid = value.trim() !== '' && !valid && value.trim().length >= 3
 
-  const caption = result && theirs !== null ? `Who is more cooked? Me: GOI ${goi}. My friend: GOI ${theirs}. ${result.headline} ${result.line}\n${VERSUS.fine}\nRun yours: ${SITE_URL}` : ''
+  const caption = result && theirs !== null ? `Who is more cooked? Me: GOI ${goi} (${rankBadge(goi).name}). My friend: GOI ${theirs} (${rankBadge(theirs).name}). ${result.headline} ${result.line}\n${VERSUS.fine}\nRun yours: ${SITE_URL}` : ''
 
   const art = (side: 'me' | 'them') => {
     if (theirs === null) return side === 'me' ? 'inspect' : 'stare'
@@ -38,7 +40,10 @@ export function Versus({ goi }: { goi: number }) {
           <ReactionArt reaction={art('me')} className="h-[clamp(4.5rem,16vh,10rem)] w-[clamp(4.5rem,16vh,10rem)]" />
           <p className="mt-1 text-sm font-semibold text-muted">{VERSUS.you}</p>
           <p className="tabular font-mono text-[clamp(2.2rem,8vh,4rem)] leading-none font-medium text-lime">{goi}</p>
-          <p className="mt-1 text-xs text-muted">{goiBand(goi)}</p>
+          <p className="mt-1 flex items-center gap-1 text-xs font-semibold" style={{ color: rankBadge(goi).tone }}>
+            <BadgeEmblem badge={rankBadge(goi)} className="h-5 w-5" />
+            {goiBand(goi)}
+          </p>
         </div>
         <span className="font-display text-[clamp(1.6rem,5vh,3rem)] font-black text-coral">VS</span>
         <div className="flex min-w-0 flex-col items-center text-center">
@@ -62,7 +67,10 @@ export function Versus({ goi }: { goi: number }) {
               invalid ? 'border-coral' : 'border-line-strong focus:border-lime'
             }`}
           />
-          <p className="mt-1 text-xs text-muted">{theirs !== null ? goiBand(theirs) : ' '}</p>
+          <p className="mt-1 flex min-h-5 items-center gap-1 text-xs font-semibold" style={{ color: theirs !== null ? rankBadge(theirs).tone : undefined }}>
+            {theirs !== null && <BadgeEmblem badge={rankBadge(theirs)} className="h-5 w-5" />}
+            {theirs !== null ? goiBand(theirs) : ' '}
+          </p>
         </div>
       </div>
 

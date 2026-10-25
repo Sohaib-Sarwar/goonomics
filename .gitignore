@@ -6,3 +6,6 @@ dist
 coverage
 .DS_Store
 assets-raw/
+
+# Instagram marketing kit: kept local, never pushed
+instagram/

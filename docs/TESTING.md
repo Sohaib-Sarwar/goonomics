@@ -3,7 +3,27 @@
 Run on 2026-10-25, Windows 11, Node 24.12, Chrome via browser automation against the production
 build (`vite preview`). Viewports were tested with exact size iframes on the real build.
 
-## Automated: `npm test` → 104 / 104 passing
+## 3.0 rank badges (2026-10-25)
+
+`npm test` → **107 / 107 passing**; `npm run build` clean (typecheck included). New tests cover the
+rank badge thresholds and ladder order, every achievement having a category, the share text naming
+the rank badge, the badge on the Damage tab, Ultimate Gooner and Discipline in the score manual, and
+"Rank badge" on the card.
+
+Browser check on the production build (Chrome, desktop 1280 wide and a 390 px frame), audit at GOI 802:
+
+| Check | Result |
+|---|---|
+| Damage tab shows the emblem and "Ultimate Gooner" next to the GOI | ✅ desktop and 390 px, no horizontal scroll |
+| Score manual: seven badge ladder with "you are here", category gallery below | ✅ |
+| Card, Recommended: GOI, rank badge, verdict, roast, achievement | ✅ |
+| Card, Show all the receipts with the badge: nothing clips | ✅ |
+| Versus shows the badge under your GOI | ✅ |
+
+Not rerun this round: the full size matrix and PNG export checks below (the card layout only gained
+the badge block, which the all fields check covers), and Lighthouse.
+
+## Automated (2.1): `npm test` → 104 / 104 passing
 
 | Suite | Tests | Covers |
 |---|---|---|

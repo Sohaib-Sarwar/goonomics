@@ -20,7 +20,7 @@ import { Sheet } from './ui'
 const QA: [string, string][] = [
   ['What did you actually calculate?', 'Your lifetime estimate, from the numbers you typed. We did not hack your browser history.'],
   ['Where did the science come from?', 'WHO lab data and medical sources. Not a random guy in the comments.'],
-  ['Are those actual calories?', 'Only if you switch on the calorie guess, and then it is labelled as your guess. No gym science for the plot.'],
+  ['Are those actual calories?', 'Only if you switch on the calorie guess, and then it is labeled as your guess. No gym science for the plot.'],
   ['Did I actually waste those kids?', 'No. Sperm cells are cells, not tiny babies. Please let biology finish its sentence.'],
   ['Are these exact numbers?', 'Nope. They are estimates from memory. Your history was never recorded by this website.'],
   ['Is my lore private?', 'It never leaves your device. No server, no analytics, no cookies. The share image is made on your phone or laptop.'],

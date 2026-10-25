@@ -1,10 +1,11 @@
+import { rankBadge } from './badges'
 import { INVITE } from './copy/lines'
 import { CARD_SIZE } from './card'
 import { SITE_URL } from './site'
 
 /** Plain text for copy and share. Ages and raw answers are never included. */
 export function shareText(opts: { verdict: string; goi: number; caption: string }): string {
-  return `${opts.caption}\nVerdict: ${opts.verdict}. GOI ${opts.goi}.\n${INVITE}\n${SITE_URL}`
+  return `${opts.caption}\nVerdict: ${opts.verdict}. GOI ${opts.goi}, rank badge: ${rankBadge(opts.goi).name}.\n${INVITE}\n${SITE_URL}`
 }
 
 export function whatsappUrl(text: string): string {

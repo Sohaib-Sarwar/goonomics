@@ -103,9 +103,12 @@ describe('GOONOMICS flow', () => {
     const goi = Number(goiButton.getAttribute('aria-label')!.match(/^GOI (\d+)/)![1])
     expect(goi).toBeGreaterThanOrEqual(300)
     for (const name of ['Lore unlocked', 'Spreadsheet survivor', 'Touch grass optional']) expect(screen.getByText(name)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /rank badge (Aura Legend|Peak Gooner|Lore Lord|Aura Farmer)/ })).toBeInTheDocument()
 
     await user.click(goiButton)
     expect(screen.getByRole('dialog', { name: 'So how cooked are you?' })).toHaveTextContent('you are here')
+    expect(screen.getByRole('dialog', { name: 'So how cooked are you?' })).toHaveTextContent('Ultimate Gooner')
+    expect(screen.getByRole('dialog', { name: 'So how cooked are you?' })).toHaveTextContent('Discipline')
     await user.keyboard('{Escape}')
 
     await user.click(screen.getByRole('tab', { name: 'Swimmers' }))
@@ -147,6 +150,7 @@ describe('GOONOMICS flow', () => {
     for (const qr of qrs) expect(qr).toHaveAttribute('src', '/assets/goonomics-qr.png')
     expect(screen.queryByText(SITE_HOST)).not.toBeInTheDocument()
     expect(screen.getAllByText(MICROCOPY.cardScan).length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Rank badge').length).toBeGreaterThan(0)
 
     // Default hides personal statistics; showing all adds them; the numbers stay the same.
     const sessionsToggle = screen.getByRole('button', { name: 'Lifetime sessions' })

@@ -15,8 +15,24 @@ function ogOrigin(): Plugin {
   }
 }
 
+/** Preloads the Latin fonts the first screen needs, using their hashed build names. */
+function preloadFonts(): Plugin {
+  return {
+    name: 'preload-fonts',
+    apply: 'build',
+    transformIndexHtml: {
+      order: 'post',
+      handler: (html, ctx) => {
+        const files = Object.keys(ctx.bundle ?? {}).filter((f) => /(big-shoulders-display|hanken-grotesk)-latin-wght-normal-.*\.woff2$/.test(f))
+        const tags = files.map((f) => `<link rel="preload" href="/${f}" as="font" type="font/woff2" crossorigin>`).join('\n    ')
+        return html.replace('</title>', `</title>\n    ${tags}`)
+      },
+    },
+  }
+}
+
 export default defineConfig({
-  plugins: [react(), tailwindcss(), ogOrigin()],
+  plugins: [react(), tailwindcss(), ogOrigin(), preloadFonts()],
   build: {
     target: 'es2022',
     cssMinify: true,

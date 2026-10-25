@@ -149,12 +149,13 @@ export default function App() {
     })
   }, [audit, form.heat, seed, reroll])
 
-  if (!ageOk) return <AgeGate onConfirm={confirmAge} />
 
   const stepperCurrent: StepId | null = screen === 'landing' ? null : screen === 'loading' ? 3 : screen
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden">
+    <>
+    {/* The landing renders under the age gate so crawlers and the first paint see real content; it stays inert until confirmed. */}
+    <div className="flex h-dvh flex-col overflow-hidden" inert={!ageOk} aria-hidden={!ageOk || undefined}>
       <a href="#main" className="sr-only z-50 rounded bg-lime px-3 py-2 text-ink focus:not-sr-only focus:fixed focus:top-2 focus:left-2">
         Skip to content
       </a>
@@ -196,6 +197,8 @@ export default function App() {
       </main>
       <ReceiptsModal open={receipts.open} showScience={receipts.science} onClose={() => setReceipts({ open: false, science: false })} />
     </div>
+    {!ageOk && <AgeGate onConfirm={confirmAge} />}
+    </>
   )
 }
 

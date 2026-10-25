@@ -2,9 +2,10 @@ import type { Ref } from 'react'
 import { CARD_SIZE, STAT_FIELDS, cardLayout, statFor, type CardField } from '../lib/card'
 import { MICROCOPY } from '../lib/copy/lines'
 import type { Verdict } from '../lib/copy/verdicts'
-import { goiBand } from '../lib/goi'
+import { rankBadge } from '../lib/badges'
 import { QR_SRC } from '../lib/site'
 import type { AuditResult } from '../lib/types'
+import { BadgeEmblem } from './Badge'
 import { ReactionArt, Stamp } from './Mascot'
 
 export interface MasterCardProps {
@@ -27,6 +28,7 @@ export function MasterCard({ result, verdict, roast, achievement, fileNo, fields
   const L = cardLayout(fields, roast, verdict.name)
   const stats = STAT_FIELDS.filter(has).map((f) => ({ id: f, ...statFor(f, result) }))
   const showAchievement = has('achievement') && achievement
+  const rank = rankBadge(result.goi)
 
   return (
     <div
@@ -67,15 +69,28 @@ export function MasterCard({ result, verdict, roast, achievement, fileNo, fields
         </div>
       </div>
 
-      {has('goi') && (
-        <div className="relative flex shrink-0 items-end justify-between gap-6 border-t-2 border-line-strong pt-5">
-          <div>
-            <div className="font-mono text-[26px] text-muted">GOI, the Goonomics Index</div>
-            <div className="tabular font-mono leading-none font-medium text-lime" style={{ fontSize: L.goiSize }}>
-              {result.goi}
+      {(has('goi') || has('badge')) && (
+        <div className="relative flex shrink-0 items-center justify-between gap-6 border-t-2 border-line-strong pt-5">
+          {has('goi') && (
+            <div className="shrink-0">
+              <div className="font-mono text-[26px] text-muted">GOI, the Goonomics Index</div>
+              <div className="tabular font-mono leading-none font-medium text-lime" style={{ fontSize: L.goiSize }}>
+                {result.goi}
+              </div>
             </div>
-          </div>
-          <div className="max-w-[460px] text-right font-display text-[44px] leading-none font-black text-balance uppercase">{goiBand(result.goi)}</div>
+          )}
+          {has('badge') && (
+            <div className={`flex min-w-0 items-center gap-5 ${has('goi') ? 'justify-end text-right' : ''}`}>
+              {!has('goi') && <BadgeEmblem badge={rank} className="h-[170px] w-[170px]" />}
+              <div className="min-w-0">
+                <div className="font-mono text-[24px] text-muted">Rank badge</div>
+                <div className="font-display text-[60px] leading-[0.9] font-black text-balance uppercase" style={{ color: rank.tone }}>
+                  {rank.name}
+                </div>
+              </div>
+              {has('goi') && <BadgeEmblem badge={rank} className="h-[170px] w-[170px]" />}
+            </div>
+          )}
         </div>
       )}
 

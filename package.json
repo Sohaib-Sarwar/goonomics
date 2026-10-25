@@ -17,7 +17,8 @@
     "assets": "node scripts/process-assets.mjs",
     "og": "node scripts/make-og.cjs",
     "qr": "node scripts/make-qr.mjs",
-    "stickers": "node scripts/process-stickers.mjs"
+    "stickers": "node scripts/process-stickers.mjs",
+    "badges": "node scripts/process-badges.mjs"
   },
   "dependencies": {
     "@fontsource-variable/big-shoulders-display": "^5.3.0",

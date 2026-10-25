@@ -118,8 +118,8 @@ export const LANDING = {
 export function versusLine(mine: number, theirs: number): { headline: string; line: string } {
   const diff = mine - theirs
   if (diff === 0) return { headline: 'It is a tie.', line: 'Both spreadsheets need help. The council demands a rematch.' }
-  if (diff >= 150) return { headline: 'You are more cooked.', line: 'Not even close. The council has ruled in your favour. Sort of.' }
-  if (diff >= 40) return { headline: 'You are more cooked.', line: 'The council has ruled in your favour. Your spreadsheet disagrees.' }
+  if (diff >= 150) return { headline: 'You are more cooked.', line: 'Not even close. The council has ruled in your favor. Sort of.' }
+  if (diff >= 40) return { headline: 'You are more cooked.', line: 'The council has ruled in your favor. Your spreadsheet disagrees.' }
   if (diff > 0) return { headline: 'You edge it.', line: 'Basically lore twins. You win by a whisker and a spreadsheet.' }
   if (diff > -40) return { headline: 'They edge it.', line: 'Basically lore twins. They win by a whisker. Rematch energy.' }
   if (diff > -150) return { headline: 'Your friend is more cooked.', line: 'Your friend has been promoted to department head.' }
@@ -156,6 +156,7 @@ export const EXPOSE = {
   reset: 'Recommended',
   fields: {
     goi: 'GOI score',
+    badge: 'Rank badge',
     verdict: 'Verdict',
     sessions: 'Lifetime sessions',
     volume: 'Volume',
@@ -202,7 +203,7 @@ export const MICROCOPY = {
   removeEra: 'Remove era',
   preset: 'Science preset',
   calories: 'Add a calorie guess',
-  caloriesHelp: 'Nobody has measured this. If you add it, it is labelled as your guess.',
+  caloriesHelp: 'Nobody has measured this. If you add it, it is labeled as your guess.',
   lockedRate: 'Not fully locked in on those days?',
   receiptsNext: 'Show me the damage',
   receiptsBack: 'Go back to my lore',
@@ -210,7 +211,7 @@ export const MICROCOPY = {
 
   loadingTitle: 'Auditing',
   skip: 'Skip the drama',
-  loadingNote: 'The math finished instantly on your device. This part is theatre.',
+  loadingNote: 'The math finished instantly on your device. This part is theater.',
 
   tabDamage: 'Damage',
   tabSwimmers: 'Swimmers',

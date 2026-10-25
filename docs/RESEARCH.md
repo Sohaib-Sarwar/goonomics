@@ -204,3 +204,14 @@ fertility or worth. No hyphens or dashes in visitor facing copy, enforced by a t
 The live commentary library holds 83 lines across age, years of lore, daily rate, peak days,
 peak rate, locked in days, roast heat and session length. Each range has a small pool and the pick is
 stable for a given value, so comments change exactly when the numbers do.
+
+## 7. 3.0 research: badges, Instagram, SEO (2026-10-25)
+
+| Finding | Source | What changed |
+|---|---|---|
+| Aura quizzes ("how much aura do you have") are a crowded, proven quiz format | [uQuiz](https://uquiz.com/quiz/WyyQAD/how-much-aura-do-you-have) | Rank badges use aura language: Aura Farmer, Aura Legend |
+| "Gooning" carries a sexual meaning in US slang; searches rose sharply since 2023 | [Know Your Meme](https://knowyourmeme.com/sensitive/memes/gooning-goon-cave), [Daily Dot](https://dailydot.com/?p=1648264) | Never in ad text, keywords or hashtags; adult theme stated plainly on the site |
+| Google Ads restricts sexually suggestive content and bans adult themes in family looking content | [Google Ads policy](https://support.google.com/adspolicy/answer/6015406?hl=en), [Search Engine Roundtable](https://www.seroundtable.com/google-ads-updates-sexual-content-policy-42306.html) | See `docs/SEO.md`: Search only, safe keyword clusters, negative keywords |
+| Instagram limits sexually suggestive content in recommendations to non followers | Instagram recommendation guidelines | Instagram kit uses no sexual hashtags or wording |
+| Sends per reach and watch time drive non follower reach; Trial Reels test with non followers first | Buffer, Later and Instagram creator announcements | Every caption ends with a send or tag prompt; one Trial Reel script |
+| Core Web Vitals thresholds: LCP 2.5 s, INP 200 ms, CLS 0.1 | web.dev Core Web Vitals | Static landing HTML, preloaded fonts, lazy results chunk |

@@ -11,6 +11,8 @@ import { fmtBigWords, fmtDuration, fmtInt, fmtNum, fmtVolume, toScientific } fro
 import { goiBand } from '../lib/goi'
 import type { TimelineAssumptions } from '../lib/timeline'
 import type { AuditResult } from '../lib/types'
+import { rankBadge } from '../lib/badges'
+import { BadgeEmblem } from './Badge'
 import { CardStudio } from './CardStudio'
 import { Bubble, ReactionArt, Stamp } from './Mascot'
 import { ScoreManual } from './ScoreManual'
@@ -118,7 +120,7 @@ export function Results(props: Props) {
           )}
         </div>
       </div>
-      <ScoreManual open={manual} onClose={() => setManual(false)} score={result.goi} />
+      <ScoreManual open={manual} onClose={() => setManual(false)} score={result.goi} achievements={props.achievements} />
     </section>
   )
 }
@@ -161,12 +163,17 @@ function DamagePanel({ result, verdict, copy, heat, achievements, onHeat, onRero
         <p className="text-sm text-paper/85 sm:text-base short:hidden">{verdict.blurb}</p>
 
         <div className="grid grid-cols-3 gap-2">
-          <button type="button" onClick={onManual} className="press min-w-0 rounded-xl border border-lime/40 bg-lime/10 px-2.5 py-2 text-left hover:border-lime" aria-label={`GOI ${result.goi}, ${goiBand(result.goi)}. Open the score manual`}>
+          <button type="button" onClick={onManual} className="press min-w-0 rounded-xl border border-lime/40 bg-lime/10 px-2.5 py-2 text-left hover:border-lime" aria-label={`GOI ${result.goi}, rank badge ${goiBand(result.goi)}. Open the badges and score manual`}>
             <span className="flex items-center gap-1 text-[0.7rem] text-muted">
               GOI <Info size={11} aria-hidden />
             </span>
-            <span className="tabular block font-mono text-[clamp(1.6rem,5vh,2.6rem)] leading-none font-medium text-lime">{Math.round(goi)}</span>
-            <span className="block text-[0.7rem] leading-tight text-muted">{goiBand(result.goi)}</span>
+            <span className="flex items-center gap-1.5">
+              <span className="tabular block font-mono text-[clamp(1.6rem,5vh,2.6rem)] leading-none font-medium text-lime">{Math.round(goi)}</span>
+              <BadgeEmblem badge={rankBadge(result.goi)} className="h-[clamp(1.6rem,5vh,2.6rem)] w-[clamp(1.6rem,5vh,2.6rem)]" />
+            </span>
+            <span className="block text-[0.7rem] leading-tight font-semibold" style={{ color: rankBadge(result.goi).tone }}>
+              {goiBand(result.goi)}
+            </span>
           </button>
           <div className="min-w-0 rounded-xl border border-line bg-panel/80 px-2.5 py-2">
             <span className="block text-[0.7rem] text-muted">{MICROCOPY.sessionsLabel}</span>
