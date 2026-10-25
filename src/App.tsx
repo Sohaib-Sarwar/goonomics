@@ -150,7 +150,8 @@ export default function App() {
   }, [audit, form.heat, seed, reroll])
 
 
-  const stepperCurrent: StepId | null = screen === 'landing' ? null : screen === 'loading' ? 3 : screen
+  // The results page has its own tabs, so the step progress bar only shows while the audit is being filled in.
+  const stepperCurrent: StepId | null = screen === 'landing' || screen === 3 ? null : screen === 'loading' ? 3 : screen
 
   return (
     <>

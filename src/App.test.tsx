@@ -96,7 +96,8 @@ describe('GOONOMICS flow', () => {
     await start(user)
     await runAudit(user, ['28', '18'], '1')
 
-    expect(currentStep()).toHaveTextContent('Get cooked')
+    // The results page drops the step progress bar; its own tabs take over.
+    expect(screen.queryByRole('navigation', { name: 'Audit progress' })).not.toBeInTheDocument()
     expect(screen.getByLabelText('3,652 sessions')).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 1, name: 'Down Bad Research Fellow' })).toBeInTheDocument()
     const goiButton = screen.getByRole('button', { name: /^GOI \d+, .*score manual$/ })
