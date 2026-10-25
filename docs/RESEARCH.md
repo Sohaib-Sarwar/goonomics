@@ -129,7 +129,7 @@ How it shaped the copy:
 - **Hard rules:** no jokes about bodies, masculinity, fertility, health or worth; nothing graphic;
   roasts target the spreadsheet and the absurdity of the audit.
 
-The full library is in [`src/lib/copy/`](../src/lib/copy): 45 roasts, 16 headlines, 10 verdicts,
+The full library is in [`src/lib/copy/`](../src/lib/copy): (phase 1 figures, superseded in section 5) 45 roasts, 16 headlines, 10 verdicts,
 29 loading lines, 16 biology punchlines, 15 time lines, 10 share prompts and 32 interface microcopy strings,
 tagged by context, band and intensity. A unit test enforces the minimum counts and no duplicates.
 
@@ -168,3 +168,25 @@ section marks (§1–§5) that match the contents index on the landing page.
   verdict stamp slams onto the file). Everything else is still. Reduced motion removes both.
 - **Imagery:** the generated hero sits behind the hero only; the mascot carries continuity (header,
   hero, age gate, loading scanner, verdict, time section, share card) with SVG props for each mood.
+
+## 5. GOONOMICS 2.0 trend research (2026-10-25)
+
+Fresh searches before rewriting the copy. What changed the product:
+
+| Finding | Source | What we did |
+|---|---|---|
+| "6-7" was named Gen Z's most hated slang (40%), ahead of skibidi (38%) and sigma (32%) in Preply's survey | [VICE](https://www.vice.com/en/article/gen-z-hates-these-popular-words-for-being-insanely-cringe/), [UNILAD Tech](https://www.uniladtech.com/news/study-reveals-slang-words-most-cringeworthy-gen-z-374787-20260302) | Removed the old "6.7 aura per session" gag. A test now fails if "67" appears in visible copy. No skibidi, sigma, rizz or fanum tax. |
+| "Aura" is at full saturation; aura points started as a TikTok joke in May 2024 | [Know Your Meme: aura](https://knowyourmeme.com/editorials/whats-with-all-the-memes-about-having-aura-from-van-dijk-to-tiktok-heres-aura-points-explained), [2026 glossary](https://genppt.com/blog/gen-alpha-slang) | Used once, twisted: "aura debt" as a labelled fictional metric. |
+| "It's so over / we're so back" spread almost entirely as plain text, ideal for captions | [Know Your Meme](https://knowyourmeme.com/memes/its-so-over-were-so-back) | Caption and burnt roast lines, not interface labels. |
+| "Let him cook" signals someone about to do something impressive | [Know Your Meme guide](https://knowyourmeme.com/editorials/guides/what-does-let-him-cook-mean-the-phrase-explained) | Ironic use in high band roasts and captions. |
+| "Chat, is this real" is still in active use in 2026 | [meme.com](https://meme.com/memes/chat-is-this-real) | One results headline, one caption. |
+| Share cards spread when they carry a "flex" element: a big number, rank or score; Stories are 1080 × 1920; share prompts work best right after the reveal | [Shareable result card guide](https://www.skills.sh/khadinakbarlabs/expo-mobile-app-builder/design-shareable-result-card), [quiz result guidance](https://quizandsurveymaster.com/?p=606773), [Spotify Wrapped analysis](https://nogood.io/?p=44277) | Added the GOI score as the flex number, put the share call to action next to the reveal, built dedicated 1080 × 1920 and 1080 × 1080 artboards. |
+| 2026 slang lists still treat cooked, touch grass, lore, lock in, crash out and let him cook as current | [Gabb 2026 guide](https://gabb.com/blog/teen-slang/), [Simplified 2026 list](https://simplified.com/blog/ai-writing/gen-z-slang-words-and-how-to-use-them) | Core vocabulary of the flow: "Get cooked", "The lore", "locked in days", "side quests". |
+
+Searches for "aura debt", "bro needs patch notes" and "not beating the allegations" returned no
+reliable coverage, so they are used sparingly as phrasing rather than presented as named memes.
+
+Tone rules for 2.0: interface labels stay short and literal with one joke at most; the roast, stamp
+and captions carry the heat. Three roast libraries (Lightly cooked, Medium rare, Burnt to a crisp)
+cover five result bands each, 63 roasts total, and never touch bodies, health, masculinity,
+fertility or worth. No hyphens or dashes in visitor facing copy, enforced by a test.

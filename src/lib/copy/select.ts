@@ -1,10 +1,10 @@
-import { BIOLOGY, LOADING, SHARE_PROMPTS } from './lines'
-import { HEADLINES, ROASTS } from './roasts'
-import { bandFor, type Band } from './verdicts'
+import { BIOLOGY, CAPTIONS, LOADING } from './lines'
+import { HEADLINES, ROASTS, type Heat } from './roasts'
+import { bandFor } from './verdicts'
 
 /**
- * Copy is chosen with a seeded RNG so the same inputs show the same jokes (until the user asks
- * for a new roast). The numbers never touch this file; it only decides which words to show.
+ * Copy is chosen with a seeded RNG so the same inputs show the same jokes until the user asks for
+ * new ones. The numbers never touch this file; it only decides which words to show.
  */
 export function hashString(input: string): number {
   let h = 0x811c9dc5
@@ -26,12 +26,12 @@ export function mulberry32(seed: number): () => number {
   }
 }
 
-function pick<T>(items: readonly T[], rand: () => number): T {
+export function pick<T>(items: readonly T[], rand: () => number): T {
   if (items.length === 0) throw new Error('Cannot pick from an empty list')
   return items[Math.floor(rand() * items.length)]!
 }
 
-function shuffle<T>(items: readonly T[], rand: () => number): T[] {
+export function shuffle<T>(items: readonly T[], rand: () => number): T[] {
   const out = [...items]
   for (let i = out.length - 1; i > 0; i--) {
     const j = Math.floor(rand() * (i + 1))
@@ -39,8 +39,6 @@ function shuffle<T>(items: readonly T[], rand: () => number): T[] {
   }
   return out
 }
-
-const fits = (bands: Band[] | 'any', band: Band) => bands === 'any' || bands.includes(band)
 
 export function fill(template: string, vars: Record<string, string>): string {
   return template.replace(/\{(\w+)\}/g, (_, key: string) => vars[key] ?? `{${key}}`)
@@ -50,25 +48,27 @@ export interface CopyPick {
   headline: string
   roast: string
   biology: string[]
-  sharePrompt: string
 }
 
-export function pickCopy(tier: number, seed: number, vars: Record<string, string>): CopyPick {
+/** Separate seeds for roast and the rest, so "new roast" swaps only the roast. */
+export function pickCopy(tier: number, heat: Heat, seed: number, roastSeed: number, vars: Record<string, string>): CopyPick {
   const band = bandFor(tier)
   const rand = mulberry32(seed)
-  const roasts = ROASTS.filter((r) => fits(r.bands, band))
-  const headlines = HEADLINES.filter((h) => fits(h.bands, band))
   const bio = shuffle(BIOLOGY, rand)
   return {
-    headline: pick(headlines, rand).text,
-    roast: fill(pick(roasts, rand).text, vars),
+    headline: pick(HEADLINES[band], rand),
+    roast: fill(pick(ROASTS[heat][band], mulberry32(roastSeed)), vars),
     biology: [bio[0]!, bio[1]!],
-    sharePrompt: fill(pick(SHARE_PROMPTS, rand), vars),
   }
 }
 
+export function pickCaption(tier: number, seed: number): string {
+  const band = bandFor(tier)
+  return pick([...CAPTIONS[band], ...CAPTIONS.any], mulberry32(seed ^ 0x5bd1e995))
+}
+
 /** One opening line, a shuffled middle, and one closing line. */
-export function loadingScript(seed: number, middleCount = 6): string[] {
+export function loadingScript(seed: number, middleCount = 4): string[] {
   const rand = mulberry32(seed ^ 0x9e3779b9)
   const open = LOADING.filter((l) => l.stage === 'open')
   const middle = shuffle(
@@ -76,5 +76,5 @@ export function loadingScript(seed: number, middleCount = 6): string[] {
     rand,
   ).slice(0, middleCount)
   const close = LOADING.filter((l) => l.stage === 'close')
-  return [pick(open, rand).text, ...middle.map((m) => m.text), close[close.length - 1]!.text]
+  return [pick(open, rand).text, ...middle.map((m) => m.text), pick(close, rand).text]
 }

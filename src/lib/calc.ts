@@ -8,6 +8,7 @@ import {
   VOLUME_ML,
 } from './assumptions'
 import { tierFor } from './copy/verdicts'
+import { goiScore } from './goi'
 import type { AuditInput, AuditResult, Rates, Segment, SegmentResult } from './types'
 
 /**
@@ -113,7 +114,7 @@ export function calculateAudit(input: AuditInput): AuditResult {
       }
     : null
 
-  return {
+  const base: Omit<AuditResult, 'goi'> = {
     years,
     modeledDays,
     coveredDays,
@@ -151,9 +152,10 @@ export function calculateAudit(input: AuditInput): AuditResult {
     calories,
     fictional: {
       brainrotXP: Math.round(sessions * FICTIONAL.xpPerSession.value + minutes * FICTIONAL.xpPerMinute.value),
-      auraLost: Math.round(sessions * FICTIONAL.auraPerSession.value),
+      auraDebt: Math.round(sessions * FICTIONAL.auraDebtPerSession.value),
       meter: fictionalMeter(sessions),
     },
     tier: tierFor(sessions),
   }
+  return { ...base, goi: goiScore(base) }
 }

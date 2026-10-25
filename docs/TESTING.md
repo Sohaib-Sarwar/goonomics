@@ -1,56 +1,54 @@
-# Testing report
+# Testing report (GOONOMICS 2.0)
 
-Run on 2026-10-25, Windows 11, Node 24.12, Chrome (via browser automation) against the production
-build served by `vite preview`.
+Run on 2026-10-25, Windows 11, Node 24.12, Chrome via browser automation against the production
+build (`vite preview`).
 
-## Automated: `npm test` → 67 / 67 passing
+## Automated: `npm test` → 81 / 81 passing
 
 | Suite | Tests | Covers |
 |---|---|---|
-| `src/lib/calc.test.ts` | 28 | sessions per year, peak days carved out (not added), off days subtracted exactly once, reduced off-day rate, >365 special days rejected, zero frequency, zero modeled years, fractional averages, leap-year averaging (4 years = 1,460.97 days), median/frequent/custom presets, Auto switching at 1/day, reference limit never used as a default, ranges contain the point estimate, largest allowed inputs stay finite, time and activity conversions, calorie toggle and clamp, fictional meter, era sums, uncovered years, era clipping, overlap rejection, peak/off inside eras, determinism, verdict thresholds |
-| `src/lib/validate.test.ts` | 19 | number parsing (comma decimals, junk, `1e9`, `Infinity`), missing values, 18+ rule, start after current age, non-integer ages, out-of-range values, zero allowed, peak rate required and ≥ regular, peak + off > year, off-day rate ≤ regular, custom and calorie fields validated only when enabled, eras: contiguous, overlapping, outside window, backwards, gap warning, at least one era, suggested eras contiguous |
-| `src/lib/format.test.ts` | 6 | grouping, "2.31 trillion" wording, scientific notation (no 10.00 mantissa), mL → L switch, durations, counts and percents |
-| `src/lib/copy/copy.test.ts` | 7 | minimum counts from the brief, no duplicate lines, every band has roasts and headlines, a time line for every activity, seeded selection deterministic and varied, placeholders always filled, loading script shape |
-| `src/App.test.tsx` | 7 | age gate and session flag, decline path hides the calculator, inline errors block submission, full flow (form → loading → skip → report) with exact numbers, **no `fetch` calls during the flow**, roast reroll keeps numbers fixed, **copied text contains no ages**, edit keeps answers and new audit clears them, era mode with overlap error then correct total |
+| `src/lib/calc.test.ts` | 28 | engine math: peak and locked in days carved out once, reduced rate, zero, fractional, leap year averaging, presets, ranges, huge inputs, eras, overlaps, determinism, tiers |
+| `src/lib/validate.test.ts` | 19 | parsing, missing values, 18+, contradictions, limits, eras |
+| `src/lib/format.test.ts` | 6 | number, volume and duration formatting |
+| `src/lib/goi.test.ts` | 7 | GOI bounds (300 to 850), monotonic, deterministic, bands; achievements thresholds including monk mode alone at zero |
+| `src/lib/copy/copy.test.ts` | 10 | minimum counts, every heat × band has roasts, no duplicate jokes, **no hyphens or dashes in any visitor facing string** (roasts, microcopy, verdicts, achievements, activities, validation errors), no "67" meme, seeded picks, roast seed changes only the roast |
+| `src/lib/qr.test.ts` | 3 | QR at `public/assets/goonomics-qr.png`, decodes to `https://goonomics.vercel.app`, still decodes at 210 px |
+| `src/App.test.tsx` | 8 | age gate and decline; stepper current step; step 1 blocks invalid input; back and forward keep answers; full run shows 3,652 sessions, correct verdict, GOI in range, correct achievements, 420 billion swimmers; **no fetch calls**; heat changes roast but not sessions or GOI; share cards show the QR from the documented path, the domain and the real value (2,191); Story 1080 × 1920 and Square 1080 × 1080; WhatsApp link encodes the site URL and no ages; caption copy; friend comparison; edit keeps answers; start over clears; receipts dialog opens and closes with Escape |
 
-Reduced motion: the jsdom setup reports `prefers-reduced-motion: reduce`, so every UI flow test runs
-the reduced-motion path of the loading sequence and verdict animation.
+All UI tests run with `prefers-reduced-motion: reduce` emulated. `npm run typecheck` (TypeScript 7,
+strict) and `npm run build` are clean.
 
-`npm run typecheck` (TypeScript 7, strict, `noUncheckedIndexedAccess`) and `npm run build` are clean.
-
-## Manual: browser checks on the production build
+## Manual: real browser, production build
 
 | Check | Result |
 |---|---|
-| Initial render, age gate, confirm | ✅ |
-| Hero image, headline scan reveal, report-contents panel with mascot | ✅ |
-| Empty submit → error summary focused, field marked | ✅ |
-| Simple audit (21 / 13, 0.7 regular, 2 peak × 30 days, 20 off days) | ✅ 2,245 sessions, matches hand calculation; 472 billion cells; 6.7 L; Auto picked WHO median at 0.77/day; 561 h |
-| Era audit on a 390 px viewport (14–30, four eras at 1 / 2 / 1.5 / 0.5) | ✅ 7,305 sessions = 4 × 365.2425 × 5; per-era table correct; Auto picked frequent values at 1.25/day (840 billion) |
-| Zero frequency | ✅ "The Blank Ledger", 0 everywhere, zero-band roast |
-| Loading sequence: progress, messages, Skip | ✅ |
-| Roast reroll | ✅ new line, numbers unchanged |
-| Download PNG | ✅ real export path, 1080 × 1350 PNG, 242 KB, about 0.8 s; inspected visually: fonts embedded, mascot, stamp and stats present (download intercepted in-page so no file was written) |
-| Copy results | ✅ text verified, no ages |
-| Native share | Button renders only where `navigator.share` exists; the OS share sheet was **not** opened during testing |
-| Mobile 390 px | ✅ after fixing a grid overflow (page was 673 px wide); no horizontal scroll on form or report |
-| Missing image fallback | ✅ broken mascot URL swaps in the SVG auditor |
-| Network | ✅ every request is same-origin; no cookies; only `sessionStorage` key is the 18+ flag |
-| Console | ✅ no errors or warnings on load or during the flow |
+| Step 1 fits one viewport | ✅ desktop 1440 × 900: 900/900; phone 390 × 844: 845/844 |
+| Step 2 fits one viewport | ✅ desktop 900/900 after moving sliders into a 2 × 2 grid; phone scrolls (991/844) with the main action pinned in a bottom bar |
+| Loading | ✅ fits both viewports, progress, skip, step 3 marked current |
+| Results reveal | ✅ desktop 900/900 with verdict, stamp, GOI, sessions, time, roast, heat, achievements; phone scrolls with a bottom action bar |
+| Numbers | ✅ 27/14, 1.2 a day, 40 peak days at 3, 25 locked in: 6,244 sessions = 13 × (300.24 × 1.2 + 40 × 3), 65 days, GOI 705, six achievements matching their rules |
+| Tabs | ✅ all four panels render; arrow keys move between tabs |
+| Story export | ✅ 1080 × 1920 PNG, QR inside the exported image decodes to `https://goonomics.vercel.app` at full and half size |
+| Square export | ✅ 1080 × 1080 PNG, QR decodes at full and half size |
+| Exported cards inspected visually | ✅ after fixing a stamp hidden behind the mascot and a dead gap in the Story layout |
+| Real values on cards | ✅ 6,244 and 13,111 runs showed their own values, file numbers and GOI |
+| Mobile overflow | ✅ fixed a transient sideways scroll during the stamp animation (`overflow-x-clip`) |
+| Network and storage | ✅ every request same origin; no cookies; only `goonomics:age-ok` in session storage |
+| Console | ✅ no errors or warnings during the full flow |
 
-## Bugs found and fixed during testing
+## Bugs found and fixed in this pass
 
-1. Mascot positioned with `absolute` was overridden by the component's own `relative`, covering text.
-2. Wordmark accent bar read as a strikethrough; replaced with lime "OO".
-3. Mobile horizontal overflow from grid columns sizing to the methodology table.
-4. Loading screen and report showed different file numbers.
-5. Long durations and "472 billion" wrapped awkwardly on the dashboard and share card.
-6. Stamp covered the small headline on narrow screens.
-7. Clumsy auto-generated citation labels ("Go 2025") replaced with explicit short labels.
+1. Step 2 and results overflowed a 900 px desktop viewport.
+2. Mobile result tabs scrolled sideways and hid two tabs; now a 2 × 2 grid.
+3. Stamp crushed the verdict into a narrow column on phones.
+4. Card stamps rendered behind the mascot's face.
+5. Story card had a large empty gap above the footer.
+6. Info button had a doubled accessible name.
+7. Four captions duplicated headlines; one validation message had a hyphen. Both caught by tests.
 
 ## Not tested
 
-- Real devices (iOS Safari, Android Chrome); mobile was checked in a 390 px frame in desktop Chrome.
-- The OS-level reduced-motion setting in a real browser (covered in jsdom and by the CSS media query).
-- Native share sheet, and PNG export in Safari/Firefox.
-- The Vercel deployment itself: not deployed from here.
+- Real phones (checked in 390 × 844 frames in desktop Chrome), Safari and Firefox.
+- The native share sheet and WhatsApp app opening (the link format is tested, the apps were not launched).
+- The live deployment: the site has not been deployed from here, so the QR has been verified to encode
+  the intended URL, not to reach a live page.

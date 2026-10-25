@@ -120,7 +120,7 @@ export const CALORIES = {
 
 /** Fictional metrics. Labelled as such everywhere they appear. */
 export const FICTIONAL = {
-  auraPerSession: { value: 6.7, unit: 'aura points', kind: 'fictional', sources: [], note: 'Industry standard. The industry is us.' },
+  auraDebtPerSession: { value: 4, unit: 'aura points', kind: 'fictional', sources: [], note: 'Aura debt accrues at a flat 4 points per session. We made that up.' },
   xpPerSession: { value: 10, unit: 'brainrot XP', kind: 'fictional', sources: [], note: 'Made up.' },
   xpPerMinute: { value: 0.5, unit: 'brainrot XP', kind: 'fictional', sources: [], note: 'Also made up.' },
   meterCeilingSessions: {
@@ -141,19 +141,20 @@ export interface Activity {
 
 /** Hypothetical alternative uses of the modeled time. All durations are assumptions we state. */
 export const ACTIVITIES: Activity[] = [
-  { id: 'novel', label: 'novels', minutes: 378, basis: '90,000-word novel at 238 words/min (Brysbaert 2019 adult average)' },
-  { id: 'lesson', label: 'beginner coding lessons', minutes: 30, basis: 'assumed 30 min each' },
-  { id: 'language', label: 'bite-size language lessons', minutes: 5, basis: 'assumed 5 min each' },
-  { id: 'sitcom', label: 'sitcom episodes', minutes: 22, basis: 'assumed 22 min each' },
-  { id: 'drama', label: 'prestige-drama episodes', minutes: 50, basis: 'assumed 50 min each' },
-  { id: 'pomodoro', label: 'pomodoro study blocks', minutes: 25, basis: '25-minute pomodoro' },
-  { id: 'film', label: 'feature films', minutes: 120, basis: 'assumed 2 h each' },
-  { id: 'trilogy', label: 'extended-edition fantasy trilogy marathons', minutes: 686, basis: 'assumed ~11.4 h per marathon' },
-  { id: 'marathon', label: 'actual marathons (the running kind)', minutes: 270, basis: 'assumed 4 h 30 min recreational finish' },
-  { id: 'gym', label: 'gym sessions', minutes: 60, basis: 'assumed 1 h each' },
-  { id: 'podcast', label: 'hour-long podcast episodes', minutes: 60, basis: 'assumed 1 h each' },
-  { id: 'guitar', label: 'guitar practice sessions', minutes: 30, basis: 'assumed 30 min each' },
-  { id: 'nap', label: 'power naps', minutes: 20, basis: 'assumed 20 min each' },
-  { id: 'flight', label: 'London to New York flights', minutes: 480, basis: 'assumed ~8 h gate to gate' },
-  { id: 'workweek', label: '40-hour work weeks', minutes: 2400, basis: '40 h each' },
+  { id: 'tutorial', label: 'productivity tutorials abandoned halfway', minutes: 12.5, basis: 'a 25 minute tutorial quit at the halfway mark' },
+  { id: 'novel', label: 'novels', minutes: 378, basis: 'a 90,000 word novel at 238 words a minute, the average adult reading speed (Brysbaert 2019)' },
+  { id: 'lesson', label: 'beginner coding lessons', minutes: 30, basis: '30 minutes each' },
+  { id: 'language', label: 'bite size language lessons', minutes: 5, basis: '5 minutes each' },
+  { id: 'sitcom', label: 'sitcom episodes', minutes: 22, basis: '22 minutes each' },
+  { id: 'drama', label: 'prestige drama episodes', minutes: 50, basis: '50 minutes each' },
+  { id: 'pomodoro', label: 'pomodoro study sessions', minutes: 25, basis: 'the classic 25 minute pomodoro' },
+  { id: 'film', label: 'feature films', minutes: 120, basis: '2 hours each' },
+  { id: 'trilogy', label: 'extended edition fantasy trilogy marathons', minutes: 686, basis: 'about 11.4 hours per marathon' },
+  { id: 'marathon', label: 'actual marathons, the running kind', minutes: 270, basis: 'a 4 h 30 min recreational finish' },
+  { id: 'gym', label: 'gym sessions', minutes: 60, basis: '1 hour each' },
+  { id: 'podcast', label: 'hour long podcast episodes', minutes: 60, basis: '1 hour each' },
+  { id: 'guitar', label: 'guitar practice sessions', minutes: 30, basis: '30 minutes each' },
+  { id: 'nap', label: 'power naps', minutes: 20, basis: '20 minutes each' },
+  { id: 'flight', label: 'flights from London to New York', minutes: 480, basis: 'about 8 hours gate to gate' },
+  { id: 'workweek', label: 'full time work weeks', minutes: 2400, basis: '40 hours each' },
 ]

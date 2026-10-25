@@ -1,40 +1,40 @@
-import { fmtBigWords, fmtDuration, fmtInt, fmtVolume } from './format'
+import { INVITE } from './copy/lines'
+import { fmtBigWords, fmtDuration, fmtInt } from './format'
+import { SITE_URL } from './site'
 import type { AuditResult } from './types'
 
-export type CardStat = 'sessions' | 'swimmers' | 'volume' | 'time'
+export type CardStat = 'sessions' | 'swimmers' | 'time'
+export type CardFormat = 'story' | 'square'
+
+export const CARD_SIZES: Record<CardFormat, { width: number; height: number }> = {
+  story: { width: 1080, height: 1920 },
+  square: { width: 1080, height: 1080 },
+}
 
 export const CARD_STATS: { id: CardStat; label: string }[] = [
-  { id: 'sessions', label: 'Lifetime sessions' },
-  { id: 'swimmers', label: 'Little swimmers' },
-  { id: 'volume', label: 'Fluid volume' },
-  { id: 'time', label: 'Time spent' },
+  { id: 'sessions', label: 'Sessions' },
+  { id: 'swimmers', label: 'Swimmers' },
+  { id: 'time', label: 'Time' },
 ]
-
-export const MAX_CARD_STATS = 3
 
 export function statValue(id: CardStat, r: AuditResult): { value: string; label: string } {
   switch (id) {
     case 'sessions':
-      return { value: fmtInt(r.sessions), label: 'estimated lifetime sessions' }
+      return { value: fmtInt(r.sessions), label: 'lifetime sessions, estimated' }
     case 'swimmers':
-      return { value: fmtBigWords(r.output.spermCells), label: 'little swimmers (cells, not kids)' }
-    case 'volume':
-      return { value: fmtVolume(r.output.totalMl), label: 'estimated fluid volume' }
+      return { value: fmtBigWords(r.output.spermCells), label: 'little swimmers. Cells, not kids.' }
     case 'time':
-      return { value: fmtDuration(r.time.minutes), label: 'of modeled time' }
+      return { value: fmtDuration(r.time.minutes), label: 'of modeled side quest time' }
   }
 }
 
-/** Plain-text summary. Ages and raw inputs are never included. */
-export function buildShareText(opts: { verdict: string; stats: CardStat[]; roast: string | null; result: AuditResult; prompt: string }): string {
-  const lines = ['GOONOMICS: The Goon Audit', `Verdict: ${opts.verdict}`]
-  for (const id of opts.stats) {
-    const s = statValue(id, opts.result)
-    lines.push(`${s.value} ${s.label}`)
-  }
-  if (opts.roast) lines.push(`“${opts.roast}”`)
-  lines.push('', opts.prompt, 'Entertainment estimate from self-reported guesses. Not medical advice.')
-  return lines.join('\n')
+/** Plain text for copy and share. Ages and raw answers are never included. */
+export function shareText(opts: { verdict: string; goi: number; caption: string }): string {
+  return `${opts.caption}\nVerdict: ${opts.verdict}. GOI ${opts.goi}.\n${INVITE}\n${SITE_URL}`
+}
+
+export function whatsappUrl(text: string): string {
+  return `https://wa.me/?text=${encodeURIComponent(text)}`
 }
 
 export async function copyText(text: string): Promise<boolean> {
@@ -63,22 +63,24 @@ export async function copyText(text: string): Promise<boolean> {
 async function waitForImages(node: HTMLElement) {
   const imgs = Array.from(node.querySelectorAll('img'))
   await Promise.all(
-    imgs.map((img) => (img.complete ? Promise.resolve() : new Promise<void>((res) => img.addEventListener('load', () => res(), { once: true })).then(() => undefined))),
+    imgs.map((img) =>
+      img.complete && img.naturalWidth > 0
+        ? Promise.resolve()
+        : new Promise<void>((res) => {
+            img.addEventListener('load', () => res(), { once: true })
+            img.addEventListener('error', () => res(), { once: true })
+          }),
+    ),
   )
   await document.fonts?.ready
 }
 
-/** Renders the report card node to a PNG blob entirely in the browser. */
-export async function renderCardPng(node: HTMLElement): Promise<Blob> {
+/** Renders a card node at its native size to a PNG blob, entirely in the browser. */
+export async function renderCardPng(node: HTMLElement, format: CardFormat): Promise<Blob> {
   const { domToBlob } = await import('modern-screenshot')
   await waitForImages(node)
-  const blob = await domToBlob(node, {
-    scale: 1,
-    type: 'image/png',
-    backgroundColor: '#0C0C0F',
-    width: node.offsetWidth,
-    height: node.offsetHeight,
-  })
+  const { width, height } = CARD_SIZES[format]
+  const blob = await domToBlob(node, { scale: 1, type: 'image/png', backgroundColor: '#0C0C0F', width, height })
   if (!blob) throw new Error('Rendering failed')
   return blob
 }
@@ -99,13 +101,13 @@ export const canNativeShare = () => typeof navigator !== 'undefined' && typeof n
 export async function nativeShare(text: string, png: Blob | null): Promise<'shared' | 'cancelled' | 'failed'> {
   try {
     if (png) {
-      const file = new File([png], 'goonomics-report.png', { type: 'image/png' })
+      const file = new File([png], 'goonomics-allegations.png', { type: 'image/png' })
       if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ title: 'GOONOMICS report', text, files: [file] })
+        await navigator.share({ text, files: [file] })
         return 'shared'
       }
     }
-    await navigator.share({ title: 'GOONOMICS report', text })
+    await navigator.share({ title: 'GOONOMICS', text, url: SITE_URL })
     return 'shared'
   } catch (e) {
     return e instanceof DOMException && e.name === 'AbortError' ? 'cancelled' : 'failed'

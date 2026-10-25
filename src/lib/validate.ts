@@ -1,4 +1,5 @@
 import { DAYS_PER_YEAR, DEFAULT_MINUTES_PER_SESSION, type OutputPresetId, CALORIES } from './assumptions'
+import type { Heat } from './copy/roasts'
 import type { AuditInput, Era } from './types'
 
 /** Raw form state: strings straight from inputs, so partially typed values never reach the engine. */
@@ -29,6 +30,8 @@ export interface FormState {
   customSpermMillions: string
   caloriesEnabled: boolean
   kcalPerMinute: string
+  /** Roast intensity. Changes copy only, never the math. */
+  heat: Heat
 }
 
 export const LIMITS = {
@@ -62,7 +65,7 @@ export function newEra(label = '', fromAge = '', toAge = ''): EraForm {
   }
 }
 
-export const DEFAULT_ERA_LABELS = ['School era', 'University arc', 'Lock-in era', 'Current era']
+export const DEFAULT_ERA_LABELS = ['School era', 'University arc', 'Lock in era', 'Current era']
 
 export function defaultForm(): FormState {
   return {
@@ -81,6 +84,7 @@ export function defaultForm(): FormState {
     customSpermMillions: '210',
     caloriesEnabled: false,
     kcalPerMinute: String(CALORIES.illustrativeDefault.value),
+    heat: 'medium',
   }
 }
 
@@ -153,9 +157,9 @@ const rateRules = {
     min: 0,
     max: LIMITS.maxPerDay,
     messages: {
-      missing: 'Give us your best guess for a regular day. Zero is a valid answer.',
-      low: 'Negative sessions are not a thing. We checked.',
-      high: `Above ${LIMITS.maxPerDay} a day is outside what the audit models. Use your average, not your record.`,
+      missing: 'Slide it or type it. Zero counts.',
+      low: 'Negative side quests are not a thing. We checked.',
+      high: `Above ${LIMITS.maxPerDay} a day? Use your average, not your personal record.`,
     },
   },
   peak: {
@@ -163,8 +167,8 @@ const rateRules = {
     max: LIMITS.maxPeakPerDay,
     messages: {
       missing: 'How many on a peak day?',
-      low: 'Negative sessions are not a thing.',
-      high: `Peak days are capped at ${LIMITS.maxPeakPerDay}. The side quest has a difficulty limit.`,
+      low: 'Negative side quests are not a thing.',
+      high: `Capped at ${LIMITS.maxPeakPerDay}. The side quest has a difficulty limit.`,
     },
   },
   peakDays: {
@@ -172,14 +176,14 @@ const rateRules = {
     max: MAX_SPECIAL_DAYS,
     integer: true,
     optional: 0,
-    messages: { missing: '', low: 'Days cannot go below zero.', high: 'A year only has 365 days. Even for the council.' },
+    messages: { missing: '', low: 'Days cannot go below zero.', high: 'A year has 365 days. Even for the council.' },
   },
   offDays: {
     min: 0,
     max: MAX_SPECIAL_DAYS,
     integer: true,
     optional: 0,
-    messages: { missing: '', low: 'Days cannot go below zero.', high: 'A year only has 365 days.' },
+    messages: { missing: '', low: 'Days cannot go below zero.', high: 'A year has 365 days.' },
   },
 } satisfies Record<string, NumRule>
 
@@ -199,12 +203,12 @@ function readRates(
   if (peakRaw !== '' || peakDaysPerYear > 0) {
     peakPerDay = readNumber(src.peakPerDay, rateRules.peak, `${prefix}peakPerDay`, errors)
     if (Number.isFinite(peakPerDay) && Number.isFinite(normalPerDay) && peakPerDay < normalPerDay) {
-      errors[`${prefix}peakPerDay`] = 'Peak days should be at least as busy as regular days. Otherwise they are just days.'
+      errors[`${prefix}peakPerDay`] = 'Peak days need to beat a normal day. Otherwise they are just days.'
     }
   }
 
   if (Number.isFinite(peakDaysPerYear) && Number.isFinite(offDaysPerYear) && peakDaysPerYear + offDaysPerYear > MAX_SPECIAL_DAYS) {
-    errors[`${prefix}offDaysPerYear`] = 'Peak days plus off days add up to more than a year. Something has to give.'
+    errors[`${prefix}offDaysPerYear`] = 'Peak days plus locked in days add up to more than a year. Something has to give.'
   }
   return { normalPerDay, peakPerDay, peakDaysPerYear, offDaysPerYear }
 }
@@ -220,10 +224,10 @@ export function validateForm(form: FormState): ValidationResult {
       max: LIMITS.maxAge,
       integer: true,
       messages: {
-        missing: 'We need your current age to know how long the lore runs.',
+        missing: 'Need this one. It sets how long the lore runs.',
         low: 'This audit is for adults (18+).',
         high: `The audit tops out at ${LIMITS.maxAge}. Respect to the elders, though.`,
-        integer: 'Whole years only. Nobody is 24.5 on a form.',
+        integer: 'Whole years. Nobody is 24.5 on a form.',
       },
     },
     'currentAge',
@@ -236,8 +240,8 @@ export function validateForm(form: FormState): ValidationResult {
       max: LIMITS.maxAge,
       integer: true,
       messages: {
-        missing: 'When did the lore begin? A rough age is fine.',
-        low: `The audit starts counting at ${LIMITS.minStartAge}. Try a later age.`,
+        missing: 'When did the lore begin? A rough guess is fine.',
+        low: `The audit starts counting at ${LIMITS.minStartAge}.`,
         high: 'That starting age is beyond the audit range.',
         integer: 'Whole years only.',
       },
@@ -246,7 +250,7 @@ export function validateForm(form: FormState): ValidationResult {
     errors,
   )
   if (Number.isFinite(currentAge) && Number.isFinite(startAge) && startAge > currentAge) {
-    errors.startAge = 'The lore cannot begin after today. Time travel is a separate audit.'
+    errors.startAge = 'The lore cannot start after your current age. Time travel is a separate audit.'
   }
 
   const simpleRates =
@@ -260,13 +264,13 @@ export function validateForm(form: FormState): ValidationResult {
       min: 0,
       max: LIMITS.maxPerDay,
       optional: 0,
-      messages: { missing: '', low: 'Negative sessions are not a thing.', high: 'Off days should be quieter than that.' },
+      messages: { missing: '', low: 'Negative side quests are not a thing.', high: 'Locked in days should be quieter than that.' },
     },
     'offPerDay',
     errors,
   )
   if (form.mode === 'simple' && Number.isFinite(offPerDay) && Number.isFinite(simpleRates.normalPerDay) && offPerDay > simpleRates.normalPerDay) {
-    errors.offPerDay = 'Off days should be quieter than regular days. That is the whole point of them.'
+    errors.offPerDay = 'Locked in days should be quieter than normal days. That is the whole point.'
   }
 
   const minutesPerSession = readNumber(
@@ -275,9 +279,9 @@ export function validateForm(form: FormState): ValidationResult {
       min: 1,
       max: LIMITS.maxMinutes,
       messages: {
-        missing: 'Pick an average session length so we can run the time audit.',
+        missing: 'Pick a session length for the time math.',
         low: 'At least one minute, please.',
-        high: 'Over four hours per session? Use an average, not a personal best.',
+        high: 'Over four hours? Use an average, not a personal best.',
       },
     },
     'minutesPerSession',
@@ -319,7 +323,7 @@ export function validateForm(form: FormState): ValidationResult {
         {
           min: LIMITS.kcal[0],
           max: LIMITS.kcal[1],
-          messages: { missing: 'Enter a kcal-per-minute guess.', low: 'Too small to model.', high: `Capped at ${LIMITS.kcal[1]}.` },
+          messages: { missing: 'Enter your calories per minute guess.', low: 'Too small to model.', high: `Capped at ${LIMITS.kcal[1]}.` },
         },
         'kcalPerMinute',
         errors,
@@ -328,7 +332,7 @@ export function validateForm(form: FormState): ValidationResult {
 
   const eras: Era[] = []
   if (form.mode === 'eras') {
-    if (form.eras.length === 0) errors.eras = 'Add at least one era, or switch back to the simple audit.'
+    if (form.eras.length === 0) errors.eras = 'Add at least one era, or switch eras off.'
     if (form.eras.length > LIMITS.maxEras) errors.eras = `Up to ${LIMITS.maxEras} eras. Even sagas need an ending.`
     for (const ef of form.eras) {
       const p = `eras.${ef.id}.`

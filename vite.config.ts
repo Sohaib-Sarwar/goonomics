@@ -4,11 +4,11 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 /**
- * Social scrapers want absolute og:image URLs. On Vercel the production hostname is exposed at
- * build time; locally (or elsewhere) we fall back to a relative path.
+ * Social scrapers want absolute og:image URLs. Defaults to the production domain; set SITE_URL
+ * at build time to point previews at a custom domain instead.
  */
 function ogOrigin(): Plugin {
-  const host = process.env.SITE_URL ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : '')
+  const host = process.env.SITE_URL ?? 'https://goonomics.vercel.app'
   return {
     name: 'og-origin',
     transformIndexHtml: (html) => html.replaceAll('%OG_ORIGIN%', host.replace(/\/$/, '')),
@@ -20,6 +20,8 @@ export default defineConfig({
   build: {
     target: 'es2022',
     cssMinify: true,
+    // Hashed bundles live apart from public/assets so those plain files (like the QR) are not cached forever.
+    assetsDir: '_app',
   },
   test: {
     environment: 'jsdom',

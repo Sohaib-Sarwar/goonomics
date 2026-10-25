@@ -39,7 +39,7 @@ describe('validateForm', () => {
   })
 
   it('rejects a start age after the current age', () => {
-    expect(validateForm(form({ startAge: '30' })).errors.startAge).toMatch(/after today/)
+    expect(validateForm(form({ startAge: '30' })).errors.startAge).toMatch(/cannot start after/)
   })
 
   it('rejects non-integer ages and absurd values', () => {
@@ -55,7 +55,7 @@ describe('validateForm', () => {
 
   it('requires a peak rate once peak days are set, and it must not be below normal', () => {
     expect(validateForm(form({ peakDaysPerYear: '20' })).errors.peakPerDay).toBeDefined()
-    expect(validateForm(form({ peakDaysPerYear: '20', peakPerDay: '0.5' })).errors.peakPerDay).toMatch(/at least as busy/)
+    expect(validateForm(form({ peakDaysPerYear: '20', peakPerDay: '0.5' })).errors.peakPerDay).toMatch(/need to beat a normal day/)
     expect(validateForm(form({ peakDaysPerYear: '20', peakPerDay: '3' })).input?.peakPerDay).toBe(3)
   })
 

@@ -3,10 +3,12 @@ import { afterEach, vi } from 'vitest'
 import { cleanup } from '@testing-library/react'
 
 afterEach(() => {
+  if (typeof window === 'undefined') return
   cleanup()
   sessionStorage.clear()
 })
 
+if (typeof window !== 'undefined') {
 // jsdom gaps. Reduced motion is reported as ON so the loading sequence runs at its short pace.
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -30,3 +32,4 @@ class ResizeObserverStub {
 globalThis.ResizeObserver = ResizeObserverStub as unknown as typeof ResizeObserver
 window.scrollTo = vi.fn() as unknown as typeof window.scrollTo
 Element.prototype.scrollIntoView = vi.fn()
+}

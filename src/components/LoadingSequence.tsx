@@ -1,15 +1,15 @@
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { loadingScript } from '../lib/copy/select'
 import { MICROCOPY } from '../lib/copy/lines'
-import { Mascot } from './Mascot'
+import { loadingScript } from '../lib/copy/select'
+import { ReactionMascot } from './Mascot'
 
-const STEP_MS = 520
-const STEP_MS_REDUCED = 260
+const STEP_MS = 480
+const STEP_MS_REDUCED = 220
 
 /**
- * Pure theatre. The result is already computed before this mounts; the sequence just gives it
- * an entrance, and the skip button ends it immediately.
+ * Pure theatre. The result is computed before this mounts; the sequence gives it an entrance and
+ * the skip button ends it immediately.
  */
 export function LoadingSequence({ seed, onDone }: { seed: number; onDone: () => void }) {
   const reduce = useReducedMotion()
@@ -29,7 +29,7 @@ export function LoadingSequence({ seed, onDone }: { seed: number; onDone: () => 
   useEffect(() => {
     const ms = reduce ? STEP_MS_REDUCED : STEP_MS
     if (step >= script.length - 1) {
-      const t = window.setTimeout(finish, ms + 200)
+      const t = window.setTimeout(finish, ms + 150)
       return () => window.clearTimeout(t)
     }
     const t = window.setTimeout(() => setStep((s) => s + 1), ms)
@@ -39,81 +39,55 @@ export function LoadingSequence({ seed, onDone }: { seed: number; onDone: () => 
   const progress = Math.round(((step + 1) / script.length) * 100)
 
   return (
-    <section aria-labelledby="loading-title" className="grid-paper flex min-h-[calc(100svh-61px)] items-center justify-center px-4 py-8">
-      <div className="w-full max-w-lg">
-        <h2 id="loading-title" ref={headingRef} tabIndex={-1} className="font-mono text-xs text-muted outline-none">
-          Audit in progress, file GN-{String(seed % 100000).padStart(5, '0')}
-        </h2>
+    <section aria-labelledby="loading-title" className="grid-paper flex flex-1 flex-col items-center justify-center px-4 py-6">
+      <h2 id="loading-title" ref={headingRef} tabIndex={-1} className="font-display text-4xl font-black uppercase outline-none">
+        {MICROCOPY.loadingTitle}
+        <span className="motion-safe:animate-blink text-lime">.</span>
+      </h2>
 
-        <div className="relative mt-4 h-[min(22rem,42svh)] overflow-hidden border border-line bg-panel">
-          <Corners />
-          <Mascot className="absolute inset-x-0 top-[8%] mx-auto h-[78%] w-[78%]" mood={step > script.length / 2 ? 'textbook' : 'suspicious'} decorative eager />
-          {!reduce && (
-            <div aria-hidden className="absolute inset-x-0 top-0 h-full motion-safe:animate-scan">
-              <div className="h-px bg-lime shadow-[0_0_18px_4px_rgb(197_255_92/0.55)]" />
-              <div className="h-16 bg-gradient-to-b from-lime/15 to-transparent" />
+      <div className="relative mt-4 h-[min(16rem,34svh)] w-[min(16rem,34svh)]">
+        <ReactionMascot reaction="sweat" className="h-full w-full" />
+        {!reduce && (
+          <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden rounded-3xl">
+            <div className="absolute inset-x-0 top-0 h-full motion-safe:animate-scan">
+              <div className="h-0.5 bg-lime shadow-[0_0_18px_4px_rgb(197_255_92/0.55)]" />
             </div>
-          )}
-          <span className="absolute bottom-3 left-3 font-mono text-[0.65rem] text-faint">specimen: your lore</span>
-          <span className="tabular absolute right-3 bottom-3 font-mono text-[0.65rem] text-lime">{progress}%</span>
-        </div>
+          </div>
+        )}
+      </div>
 
-        <div
-          className="mt-4 h-1 w-full bg-line"
-          role="progressbar"
-          aria-label="Audit progress"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={progress}
-        >
-          <div className="h-full bg-lime transition-[width] duration-500 ease-out" style={{ width: `${progress}%` }} />
+      <div className="mt-5 w-full max-w-md">
+        <div className="flex items-center justify-between font-mono text-xs text-muted">
+          <span>Audit progress</span>
+          <span className="tabular text-lime">{progress}%</span>
         </div>
-
-        <ol className="mt-5 min-h-[9.5rem] space-y-1 font-mono text-sm" aria-hidden>
-          {script.slice(Math.max(0, step - 3), step).map((line) => (
-            <li key={line} className="truncate text-faint">
-              <span className="text-lime/60">ok</span> {line}
-            </li>
-          ))}
+        <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-line" role="progressbar" aria-label="Audit progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={progress}>
+          <div className="h-full rounded-full bg-lime transition-[width] duration-500 ease-out" style={{ width: `${progress}%` }} />
+        </div>
+        <div className="mt-4 min-h-[3.5rem] text-center" aria-hidden>
           <AnimatePresence mode="wait">
-            <motion.li
+            <motion.p
               key={script[step]}
-              initial={reduce ? false : { opacity: 0, y: 6 }}
+              initial={reduce ? false : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={reduce ? undefined : { opacity: 0 }}
-              transition={{ duration: 0.18 }}
-              className="text-paper"
+              exit={reduce ? undefined : { opacity: 0, y: -6 }}
+              transition={{ duration: 0.16 }}
+              className="text-lg font-semibold"
             >
-              <span className="text-lime">&gt;</span> {script[step]}
-              <span className="motion-safe:animate-blink text-lime">▍</span>
-            </motion.li>
+              {script[step]}
+            </motion.p>
           </AnimatePresence>
-        </ol>
+        </div>
         <p role="status" aria-live="polite" className="sr-only">
           {script[step]}
         </p>
-
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-4">
-          <p className="max-w-xs text-xs text-muted">
-            The math already finished on your device in about a millisecond. This part is purely for drama.
-          </p>
-          <button type="button" onClick={finish} className="border border-line-strong px-4 py-2 text-sm hover:border-paper">
+        <div className="mt-3 flex flex-col items-center gap-2">
+          <button type="button" onClick={finish} className="press rounded-xl border border-line-strong px-5 py-2.5 font-semibold hover:border-paper">
             {MICROCOPY.skip}
           </button>
+          <p className="text-center text-xs text-faint">{MICROCOPY.loadingNote}</p>
         </div>
       </div>
     </section>
-  )
-}
-
-function Corners() {
-  const c = 'absolute h-5 w-5 border-lime'
-  return (
-    <div aria-hidden>
-      <span className={`${c} top-2 left-2 border-t-2 border-l-2`} />
-      <span className={`${c} top-2 right-2 border-t-2 border-r-2`} />
-      <span className={`${c} bottom-2 left-2 border-b-2 border-l-2`} />
-      <span className={`${c} right-2 bottom-2 border-r-2 border-b-2`} />
-    </div>
   )
 }

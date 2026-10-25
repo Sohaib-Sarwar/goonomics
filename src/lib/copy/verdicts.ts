@@ -2,88 +2,27 @@
  * Verdict tiers by estimated lifetime sessions. Thresholds are entertainment categories, not
  * clinical cut-offs: a big number is not a diagnosis, and a small one is not a gold star.
  */
-export type MascotMood = 'suspicious' | 'shocked' | 'graduate' | 'textbook' | 'buried' | 'stamp'
+export type Reaction = 'audit' | 'sweat' | 'shock' | 'party' | 'void' | 'professor' | 'stamp'
 
 export interface Verdict {
   minSessions: number
   name: string
   blurb: string
   stamp: string
-  /** Mascot pose: real mascot art plus an SVG prop or CSS motion (see components/Mascot.tsx). */
-  mood: MascotMood
+  reaction: Reaction
 }
 
 export const VERDICTS: Verdict[] = [
-  {
-    minSessions: 0,
-    name: 'The Blank Ledger',
-    blurb: 'Zero entries. Either you are on a monk arc or you are trolling the council. Both are valid lore.',
-    stamp: 'Nothing filed',
-    mood: 'suspicious',
-  },
-  {
-    minSessions: 1,
-    name: 'The Tutorial-Level Intern',
-    blurb: 'You found the controls, pressed a few buttons, and went back outside. Minimal paperwork. Suspicious amounts of grass.',
-    stamp: 'Trainee',
-    mood: 'textbook',
-  },
-  {
-    minSessions: 100,
-    name: 'The Casual Side-Quest Enjoyer',
-    blurb: 'You do the side quest now and then and return to the main story. Healthy pacing. Boring spreadsheet.',
-    stamp: 'Casual',
-    mood: 'suspicious',
-  },
-  {
-    minSessions: 1_000,
-    name: 'The Lore Archivist',
-    blurb: 'Four digits. The filing cabinet now needs a second drawer and a labeling system.',
-    stamp: 'Archived',
-    mood: 'textbook',
-  },
-  {
-    minSessions: 3_000,
-    name: 'The Down-Bad Research Fellow',
-    blurb: 'Fellowship granted. The department respects your commitment to primary research.',
-    stamp: 'Funded',
-    mood: 'graduate',
-  },
-  {
-    minSessions: 6_000,
-    name: 'Department Head of Questionable Time Management',
-    blurb: 'You now run a whole department. The department has no budget and one employee. It is you.',
-    stamp: 'Under review',
-    mood: 'suspicious',
-  },
-  {
-    minSessions: 10_000,
-    name: 'The Spreadsheet Final Boss',
-    blurb: 'Five digits. Excel asked if you were sure. You were sure.',
-    stamp: 'Escalated',
-    mood: 'shocked',
-  },
-  {
-    minSessions: 15_000,
-    name: 'CEO of Unnecessary Statistics',
-    blurb: 'Board meetings are held quarterly. Attendance is mandatory. Minutes are, unfortunately, being taken.',
-    stamp: 'Board approved',
-    mood: 'stamp',
-  },
-  {
-    minSessions: 25_000,
-    name: 'Tenured Professor of Brainrot',
-    blurb: 'Tenure means they cannot fire you. They have looked into it anyway.',
-    stamp: 'Tenured',
-    mood: 'graduate',
-  },
-  {
-    minSessions: 50_000,
-    name: 'Subject of an Emergency Council Session',
-    blurb: 'The council has convened. Nobody is in trouble. Everyone is just extremely curious.',
-    stamp: 'Council',
-    mood: 'buried',
-  },
+  { minSessions: 0, name: 'Certified Monk Mode', blurb: 'Zero entries. The council is checking if the form is broken.', stamp: 'Clean', reaction: 'professor' },
+  { minSessions: 1, name: 'Tutorial Level Intern', blurb: 'Pressed a few buttons, then went outside. Respect.', stamp: 'Trainee', reaction: 'audit' },
+  { minSessions: 100, name: 'Casual Side Quester', blurb: 'Does the side quest, returns to the main story. Healthy pacing.', stamp: 'Noted', reaction: 'audit' },
+  { minSessions: 1_000, name: 'The Lore Archivist', blurb: 'Four digits. The filing cabinet needs a second drawer.', stamp: 'Archived', reaction: 'professor' },
+  { minSessions: 3_000, name: 'Down Bad Research Fellow', blurb: 'Fellowship granted. The department respects the dedication.', stamp: 'Funded', reaction: 'sweat' },
+  { minSessions: 6_000, name: 'Head of Questionable Time Management', blurb: 'A whole department. No budget. One employee. It is you.', stamp: 'Under review', reaction: 'sweat' },
+  { minSessions: 10_000, name: 'Spreadsheet Final Boss', blurb: 'Five digits. Excel asked if you were sure.', stamp: 'Cooked', reaction: 'shock' },
+  { minSessions: 15_000, name: 'CEO of Unnecessary Statistics', blurb: 'Board meetings are quarterly. Minutes are being taken. Unfortunately.', stamp: 'Well done', reaction: 'stamp' },
+  { minSessions: 25_000, name: 'Tenured Professor of Brainrot', blurb: 'Tenure means they cannot fire you. They checked.', stamp: 'Tenured', reaction: 'void' },
+  { minSessions: 50_000, name: 'Emergency Council Session', blurb: 'The council convened. Nobody is in trouble. Everyone is curious.', stamp: 'Burnt', reaction: 'shock' },
 ]
 
 export function tierFor(sessions: number): number {
@@ -96,7 +35,7 @@ export function tierFor(sessions: number): number {
   return Math.max(1, tier)
 }
 
-/** Coarse band used to route roasts and headlines. */
+/** Coarse band used to route roasts, headlines and captions. */
 export type Band = 'zero' | 'low' | 'mid' | 'high' | 'max'
 
 export function bandFor(tier: number): Band {

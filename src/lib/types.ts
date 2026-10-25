@@ -79,8 +79,10 @@ export interface AuditResult {
   }
   fictional: {
     brainrotXP: number
-    auraLost: number
+    auraDebt: number
     meter: number
   }
   tier: number
+  /** Goonomics Index, 300 to 850, entertainment only. */
+  goi: number
 }

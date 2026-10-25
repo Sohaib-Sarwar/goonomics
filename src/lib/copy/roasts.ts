@@ -1,89 +1,125 @@
 import type { Band } from './verdicts'
 
 /**
- * Roasts target the absurdity of the audit and the spreadsheet, never the person's body, health,
- * masculinity, fertility or worth. Placeholders: {sessions} {hours} {years}.
+ * Roast heat changes the words, never the numbers. Roasts target the spreadsheet, the lore and the
+ * absurdity of the audit; never bodies, health, masculinity, fertility or worth.
+ * Placeholders: {sessions} {hours} {years}.
  */
-export interface Roast {
-  bands: Band[] | 'any'
-  intensity: 'mild' | 'spicy'
-  text: string
+export type Heat = 'light' | 'medium' | 'burnt'
+
+export const HEAT_LABELS: Record<Heat, string> = {
+  light: 'Lightly cooked',
+  medium: 'Medium rare',
+  burnt: 'Burnt to a crisp',
 }
 
-export const ROASTS: Roast[] = [
-  // zero
-  { bands: ['zero'], intensity: 'mild', text: 'The archive is so empty the auditor checked if the form was broken. It was not.' },
-  { bands: ['zero'], intensity: 'mild', text: 'Clean file. Suspiciously clean. The council is going to need a minute.' },
-  { bands: ['zero'], intensity: 'spicy', text: 'Monk mode so strong the spreadsheet is filing a missing-persons report.' },
+export const ROASTS: Record<Heat, Record<Band, string[]>> = {
+  light: {
+    zero: [
+      'Clean record. Honestly, respect.',
+      'The spreadsheet had nothing to do today. It is thriving.',
+      'Monk mode unlocked. The council is taking notes.',
+    ],
+    low: [
+      'Minor lore. You touch grass and it shows.',
+      'Houseplant owner energy. Wholesome.',
+      'Barely a side quest. Main character stayed on the main story.',
+      'The auditor checked twice. Still mostly vibes.',
+    ],
+    mid: [
+      'Respectable lore. The archive needed one more shelf.',
+      'The spreadsheet is fine. Slightly sweaty, but fine.',
+      'Solid numbers. Nobody is cooked. Yet.',
+      'The council reviewed your file and nodded politely.',
+    ],
+    high: [
+      'Big lore energy. The archive is working overtime.',
+      'The spreadsheet asked for a short break. Granted.',
+      'That is a lot of paperwork for one person. Impressive, honestly.',
+      'Let him cook. He clearly did.',
+    ],
+    max: [
+      'The archive moved to a bigger building. Congrats?',
+      'Your lore has its own lore now.',
+      'A legendary file. Framed and everything.',
+      'The council is in awe. Mostly in awe.',
+    ],
+  },
+  medium: {
+    zero: [
+      'Zero. Monk mode or you lied to a calculator. Both are valid.',
+      'The spreadsheet ran the numbers and found tumbleweeds.',
+      'Clean file. The council suspects a cover up.',
+    ],
+    low: [
+      'Your lore fits on a sticky note. The council expected more.',
+      'Low numbers, high self control. Annoying, but respectable.',
+      'You tried the side quest once and went straight back to the tutorial.',
+      'The auditor yawned. Twice.',
+    ],
+    mid: [
+      'The calculator has no right knowing this much.',
+      'Your time management allegations have entered evidence.',
+      '{sessions} entries. The intern asked for a raise.',
+      'This lore needs a wiki and two moderators.',
+      'The council reviewed your case and would like to unsubscribe.',
+    ],
+    high: [
+      'Bro generated enough lore for a Netflix documentary.',
+      'The spreadsheet is fighting for its life.',
+      'Excel asked if you were sure. You were very sure.',
+      '{hours} hours. Absolute cinema. Unfortunately.',
+      'You did not have a side quest. The side quest had you.',
+    ],
+    max: [
+      'Final boss energy. The kind with two health bars.',
+      'We switched to scientific notation out of respect.',
+      'Not a canon event. The entire canon.',
+      'The council called an emergency meeting and nobody brought snacks.',
+      '{years} years of lore and not a single patch note.',
+    ],
+  },
+  burnt: {
+    zero: [
+      'Zero entries. Monk or liar. The council is checking.',
+      'You bored a spreadsheet. That is a first.',
+      'No lore. No losses. No notes. Suspicious behavior.',
+    ],
+    low: [
+      'NPC behavior, in the most respectful way.',
+      'Your lore is a loading screen.',
+      'The council skimmed your file in four seconds. That was generous.',
+      'Side quest attempted. Side quest abandoned. Skill issue.',
+    ],
+    mid: [
+      'This is not beating the allegations.',
+      'Bro needs patch notes.',
+      'Your search history entered the chat and immediately left.',
+      'The allegations are not looking good, and they are in a spreadsheet.',
+      'Crash out averted. The spreadsheet is less sure.',
+    ],
+    high: [
+      'It is so over. The spreadsheet filed for emotional damages.',
+      'Locked in. Just on the wrong thing.',
+      'Your alternate timeline has a gym membership and a podcast. You have this.',
+      '{hours} hours. That is a whole degree in something else.',
+      'Aura debt so deep it is collecting interest.',
+    ],
+    max: [
+      'The council reviewed your case and blocked you.',
+      'Lore beyond containment. Burn the archive.',
+      'Your file was printed and the printer quit.',
+      'The Department of Goonomics is naming a building after you. It is a warning.',
+      'Generational fumble, documented to the decimal.',
+    ],
+  },
+}
 
-  // low
-  { bands: ['low'], intensity: 'mild', text: 'The archives are so light we filed them under "misc".' },
-  { bands: ['low'], intensity: 'mild', text: 'This is the lore of someone who keeps a houseplant alive on purpose.' },
-  { bands: ['low'], intensity: 'mild', text: 'Your whole spreadsheet fits on a sticky note. The council is almost disappointed.' },
-  { bands: ['low'], intensity: 'mild', text: 'Minimal side quests. Main-story merchant. Respect.' },
-  { bands: ['low'], intensity: 'spicy', text: 'You touch grass so consistently the grass has started asking questions.' },
-  { bands: ['low'], intensity: 'mild', text: 'The auditor checked twice. Still mostly whitespace.' },
-  { bands: ['low'], intensity: 'spicy', text: 'Low numbers, high aura. We do not make the rules. We do make the spreadsheet.' },
-
-  // mid
-  { bands: ['mid'], intensity: 'mild', text: 'The archives have become difficult to organize. We bought a label maker.' },
-  { bands: ['mid'], intensity: 'mild', text: 'Your character development has generated real, physical paperwork.' },
-  { bands: ['mid'], intensity: 'spicy', text: '{sessions} entries. The intern has requested a mental health day.' },
-  { bands: ['mid'], intensity: 'mild', text: 'This lore needs a wiki and at least two volunteer moderators.' },
-  { bands: ['mid'], intensity: 'spicy', text: 'Respectfully, the filing cabinet is down bad.' },
-  { bands: ['mid'], intensity: 'mild', text: 'Your side quest has more hours logged than some people’s main quest.' },
-  { bands: ['mid'], intensity: 'mild', text: 'The council reviewed your file and said “huh” out loud. Twice.' },
-  { bands: ['mid'], intensity: 'spicy', text: 'Certified lore enjoyer. Unpaid. Unsupervised. Undeterred.' },
-  { bands: ['mid'], intensity: 'mild', text: 'The spreadsheet is not judging you. The formula bar is, a little.' },
-  { bands: ['mid'], intensity: 'mild', text: 'Somewhere a productivity coach just felt a disturbance.' },
-  { bands: ['mid'], intensity: 'spicy', text: 'Mid-tier numbers, top-tier consistency. Standing on business.' },
-
-  // high
-  { bands: ['high'], intensity: 'mild', text: 'The spreadsheet has requested annual leave.' },
-  { bands: ['high'], intensity: 'mild', text: 'Your file is so thick the auditor needed a second clipboard.' },
-  { bands: ['high'], intensity: 'spicy', text: 'Excel is asking whether you meant to type that many digits.' },
-  { bands: ['high'], intensity: 'mild', text: 'This is not a ledger anymore. It is a trilogy with a spin-off.' },
-  { bands: ['high'], intensity: 'spicy', text: 'The Department of Time Management has gone quiet. Ominously quiet.' },
-  { bands: ['high'], intensity: 'spicy', text: 'You did not have a side quest. The side quest had you.' },
-  { bands: ['high'], intensity: 'mild', text: 'Your lore has lore.' },
-  { bands: ['high'], intensity: 'spicy', text: 'Locked in. Just not on the thing your teachers meant.' },
-  { bands: ['high'], intensity: 'mild', text: 'The intern quit. The replacement intern also quit.' },
-  { bands: ['high'], intensity: 'spicy', text: '{hours} hours. Absolute cinema, in the least cinematic sense.' },
-
-  // max
-  { bands: ['max'], intensity: 'mild', text: 'The council has convened an emergency session and ordered snacks.' },
-  { bands: ['max'], intensity: 'mild', text: 'Your character arc generated enough documentation for three departments.' },
-  { bands: ['max'], intensity: 'spicy', text: 'Final boss energy. The kind with two health bars and a cutscene.' },
-  { bands: ['max'], intensity: 'mild', text: 'We switched to scientific notation out of respect.' },
-  { bands: ['max'], intensity: 'spicy', text: 'The auditor has started a podcast about your file. It is doing numbers.' },
-  { bands: ['max'], intensity: 'spicy', text: 'This is not a canon event. This is the entire canon.' },
-  { bands: ['max'], intensity: 'mild', text: 'The archive has been relocated to a larger building.' },
-  { bands: ['max'], intensity: 'spicy', text: 'Unc-level tenure, regardless of your actual age.' },
-
-  // any band with activity
-  { bands: ['low', 'mid', 'high', 'max'], intensity: 'mild', text: 'The math is done. The math is not okay.' },
-  { bands: ['low', 'mid', 'high', 'max'], intensity: 'mild', text: 'Every number here is an estimate. Every estimate here is unhinged.' },
-  { bands: ['low', 'mid', 'high', 'max'], intensity: 'mild', text: 'Nobody is cooked. The spreadsheet is cooked.' },
-  { bands: 'any', intensity: 'mild', text: 'Your results are confidential. Your vibes are not.' },
-  { bands: 'any', intensity: 'mild', text: 'We have seen worse. We have seen better. Mostly we have seen spreadsheets.' },
-  { bands: ['mid', 'high', 'max'], intensity: 'spicy', text: '{years} years of lore and not a single progress report filed. Until now.' },
-]
-
-export const HEADLINES: { bands: Band[] | 'any'; text: string }[] = [
-  { bands: 'any', text: 'The audit is complete.' },
-  { bands: 'any', text: 'Your lore has been processed.' },
-  { bands: 'any', text: 'The council has reviewed the evidence.' },
-  { bands: ['mid', 'high', 'max'], text: 'Findings: extensive.' },
-  { bands: 'any', text: 'Report filed. Do not forward to your mother.' },
-  { bands: 'any', text: 'We did the math. The math needs therapy.' },
-  { bands: 'any', text: 'Case closed. Tabs still open.' },
-  { bands: ['mid', 'high', 'max'], text: 'The numbers are in. They brought friends.' },
-  { bands: 'any', text: 'Evidence logged. Witnesses confused.' },
-  { bands: 'any', text: 'The spreadsheet has spoken.' },
-  { bands: 'any', text: 'Character development, quantified.' },
-  { bands: ['high', 'max'], text: 'Your past has requested legal representation.' },
-  { bands: 'any', text: 'Audit status: deeply unnecessary, fully complete.' },
-  { bands: 'any', text: 'Results certified by absolutely no one.' },
-  { bands: ['zero', 'low'], text: 'Clean file. Suspiciously clean.' },
-  { bands: ['zero'], text: 'The archive is basically a screensaver.' },
-]
+/** Top line of the reveal, by band. */
+export const HEADLINES: Record<Band, string[]> = {
+  zero: ['The archive is empty. Suspiciously empty.', 'Clean record. The council is confused.'],
+  low: ['The council has decided. Mostly fine.', 'Minor lore detected.', 'We checked. You are barely cooked.'],
+  mid: ['The lore runs deep.', 'The council has decided.', 'Chat, is this real?', 'The calculator knows too much.'],
+  high: ['The allegations are not looking good.', 'It is so over.', 'The council wants a word.'],
+  max: ['The allegations have been upgraded to a case.', 'Absolute cinema. Unfortunately.', 'Lore beyond containment.'],
+}
