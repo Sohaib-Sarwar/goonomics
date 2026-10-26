@@ -78,8 +78,8 @@ The header's **Monk Mode** link and the results screen's **Build my plan** open
 [Tarn](https://github.com/Sohaib-Sarwar/Tarn), a separate, calm, local first habit companion. Tarn's
 code lives in its own repository; GOONOMICS only links to it (`src/lib/tarn.ts`).
 
-- Set `VITE_TARN_URL` at build time to Tarn's deployed address. The default
-  (`https://tarn.vercel.app`) is a placeholder until Tarn is deployed.
+- `VITE_TARN_URL` can override Tarn's address at build time. The default
+  (`https://tarn-rehab.vercel.app`) is the live Tarn deployment.
 - **Build my plan** asks first. If the person agrees, only an age range and their GOI travel, in the
   link's fragment (`#from=goonomics&age=25-34&goi=640`), which browsers never send to a server.
   Tarn reads it once and removes it. The GOI is entertainment and never sets a goal in Tarn.

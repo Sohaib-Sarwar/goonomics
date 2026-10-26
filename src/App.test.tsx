@@ -124,21 +124,13 @@ describe('GOONOMICS flow', () => {
     fetchSpy.mockRestore()
   })
 
-  it('changes the roast with heat but never the numbers', async () => {
+  it('keeps the roast on the results card without heat options or a new roast button', async () => {
     const user = userEvent.setup()
     await start(user)
     await runAudit(user, ['33', '14'], '0.5')
-    const sessions = screen.getByLabelText(/ sessions$/).getAttribute('aria-label')
-    const goi = screen.getByRole('button', { name: /^GOI \d+/ }).getAttribute('aria-label')
-    const roastOf = () => screen.getByText(/^“.*”$/).textContent
-    const seen = new Set<string | null>([roastOf()])
-    for (const heat of ['Lightly cooked', 'Burnt to a crisp', 'Medium rare']) {
-      await user.click(screen.getByRole('radio', { name: heat }))
-      seen.add(roastOf())
-      expect(screen.getByLabelText(/ sessions$/)).toHaveAttribute('aria-label', sessions)
-      expect(screen.getByRole('button', { name: /^GOI \d+/ })).toHaveAttribute('aria-label', goi)
-    }
-    expect(seen.size).toBeGreaterThan(1)
+    expect(screen.getByText(/^“.*”$/)).toBeInTheDocument()
+    expect(screen.queryByRole('radiogroup', { name: 'Roast heat' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: MICROCOPY.newRoast })).not.toBeInTheDocument()
   })
 
   it('builds one master card from the exposed fields, with the QR and no visible domain', async () => {

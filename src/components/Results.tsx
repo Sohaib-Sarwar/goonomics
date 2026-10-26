@@ -1,10 +1,10 @@
 import { motion, useReducedMotion } from 'motion/react'
-import { Fish, Flame, Hourglass, Image as ImageIcon, Info, Pencil, RefreshCw, RotateCcw, Send, Swords, Trophy } from 'lucide-react'
+import { Fish, Flame, Hourglass, Image as ImageIcon, Info, Pencil, RotateCcw, Send, Swords, Trophy } from 'lucide-react'
 import { useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import type { Achievement } from '../lib/achievements'
 import type { CardField } from '../lib/card'
 import { MICROCOPY, REALITY_CHECK, SHARE_CTAS, SWIMMER_LINES } from '../lib/copy/lines'
-import { HEAT_LABELS, type Heat } from '../lib/copy/roasts'
+import type { Heat } from '../lib/copy/roasts'
 import { mulberry32, pick, type CopyPick } from '../lib/copy/select'
 import type { Verdict } from '../lib/copy/verdicts'
 import { fmtBigWords, fmtDuration, fmtInt, fmtNum, fmtVolume, toScientific } from '../lib/format'
@@ -17,7 +17,6 @@ import { CardStudio } from './CardStudio'
 import { Bubble, ReactionArt, Stamp } from './Mascot'
 import { ScoreManual } from './ScoreManual'
 import { Timeline } from './Timeline'
-import { Segmented } from './ui'
 import { useCountUp } from './useCountUp'
 import { Versus } from './Versus'
 import { PlanBridge } from './PlanBridge'
@@ -128,7 +127,7 @@ export function Results(props: Props) {
   )
 }
 
-function DamagePanel({ result, verdict, copy, heat, achievements, onHeat, onReroll, onEdit, onRestart, fileNo, onManual, onShare, seed, planAge }: Props & { fileNo: string; onManual: () => void; onShare: () => void }) {
+function DamagePanel({ result, verdict, copy, achievements, onEdit, onRestart, fileNo, onManual, onShare, seed, planAge }: Props & { fileNo: string; onManual: () => void; onShare: () => void }) {
   const reduce = useReducedMotion()
   const goi = useCountUp(result.goi, 1100, 250)
   const sessions = useCountUp(result.sessions, 1100, 250)
@@ -201,12 +200,7 @@ function DamagePanel({ result, verdict, copy, heat, achievements, onHeat, onRero
               “{copy.roast}”
             </motion.p>
           </blockquote>
-          <figcaption className="mt-2 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2">
-            <button type="button" onClick={onReroll} className="press inline-flex items-center gap-1.5 rounded-lg bg-raised px-2.5 py-1.5 text-xs font-semibold hover:bg-line-strong">
-              <RefreshCw size={13} aria-hidden /> {MICROCOPY.newRoast}
-            </button>
-            <Segmented label="Roast heat" hideLabel value={heat} onChange={onHeat} size="sm" options={(['light', 'medium', 'burnt'] as const).map((h) => ({ value: h, label: HEAT_LABELS[h] }))} />
-          </figcaption>
+
         </figure>
 
         <div>

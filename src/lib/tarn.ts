@@ -1,9 +1,8 @@
 /**
  * Tarn, the calm habit companion, is a separate app. GOONOMICS only links to it.
- * Set VITE_TARN_URL at build time to Tarn's real address; the default is a placeholder until Tarn
- * is deployed.
+ * It is deployed at https://tarn-rehab.vercel.app; VITE_TARN_URL can override that at build time.
  */
-export const TARN_URL = (import.meta.env.VITE_TARN_URL ?? 'https://tarn.vercel.app').replace(/\/$/, '')
+export const TARN_URL = (import.meta.env.VITE_TARN_URL ?? 'https://tarn-rehab.vercel.app').replace(/\/$/, '')
 
 export type AgeRange = '18-24' | '25-34' | '35-44' | '45-54' | '55+'
 
