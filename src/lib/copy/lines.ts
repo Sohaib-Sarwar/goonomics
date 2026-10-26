@@ -169,6 +169,17 @@ export const EXPOSE = {
 }
 
 export const MICROCOPY = {
+  monkLink: 'Monk Mode',
+  monkHint: 'Want fewer side quests? Tarn is a calm, private habit companion.',
+  planPrompt: 'You have seen the numbers. Ready to set your own direction?',
+  planCta: 'Build my plan',
+  planTitle: 'Build my plan in Tarn',
+  planBody: 'Tarn is the calm side of GOONOMICS: a private habit companion where you choose what to change. Your GOI is just for fun and never decides anything there.',
+  planAge: 'Bring my age range',
+  planGoi: 'Bring my GOI as a note',
+  planPrivacy: 'Only what you tick comes along, inside the link itself. It is never uploaded, and Tarn keeps it on your device.',
+  planGo: 'Continue to Tarn',
+  planFresh: 'Start fresh instead',
   stepLore: 'The lore',
   stepReceipts: 'The receipts',
   stepCooked: 'Get cooked',

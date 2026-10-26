@@ -206,4 +206,16 @@ describe('GOONOMICS flow', () => {
     await user.keyboard('{Escape}')
     expect(screen.queryByRole('dialog', { name: 'How we cooked the numbers' })).not.toBeInTheDocument()
   })
+
+  it('offers an opt in plan in Tarn that brings nothing by default except the age range the person can untick', async () => {
+    const user = userEvent.setup()
+    await start(user)
+    await runAudit(user, ['28', '18'], '1')
+    await user.click(screen.getByRole('button', { name: /Build my plan/ }))
+    const dialog = screen.getByRole('dialog', { name: 'Build my plan in Tarn' })
+    expect(within(dialog).getByRole('checkbox', { name: 'Bring my age range' })).toBeChecked()
+    expect(within(dialog).getByRole('checkbox', { name: 'Bring my GOI as a note' })).not.toBeChecked()
+    expect(within(dialog).getByText(/never decides anything/)).toBeInTheDocument()
+    expect(sessionStorage.getItem('tarn-handoff')).toBeNull()
+  })
 })

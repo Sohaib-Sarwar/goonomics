@@ -20,6 +20,7 @@ import { Timeline } from './Timeline'
 import { Segmented } from './ui'
 import { useCountUp } from './useCountUp'
 import { Versus } from './Versus'
+import { PlanBridge } from './PlanBridge'
 
 type Tab = 'damage' | 'swimmers' | 'timeline' | 'versus' | 'card'
 
@@ -49,6 +50,8 @@ interface Props {
   onEdit: () => void
   onRestart: () => void
   onReceipts: () => void
+  /** The person's age, used only if they opt in to bring an age range into Tarn. */
+  planAge?: number
 }
 
 export function Results(props: Props) {
@@ -125,7 +128,7 @@ export function Results(props: Props) {
   )
 }
 
-function DamagePanel({ result, verdict, copy, heat, achievements, onHeat, onReroll, onEdit, onRestart, fileNo, onManual, onShare, seed }: Props & { fileNo: string; onManual: () => void; onShare: () => void }) {
+function DamagePanel({ result, verdict, copy, heat, achievements, onHeat, onReroll, onEdit, onRestart, fileNo, onManual, onShare, seed, planAge }: Props & { fileNo: string; onManual: () => void; onShare: () => void }) {
   const reduce = useReducedMotion()
   const goi = useCountUp(result.goi, 1100, 250)
   const sessions = useCountUp(result.sessions, 1100, 250)
@@ -229,6 +232,7 @@ function DamagePanel({ result, verdict, copy, heat, achievements, onHeat, onRero
         <p className="text-[0.7rem] text-faint tiny:hidden">
           File {fileNo}. {MICROCOPY.noDiagnosis}
         </p>
+        {planAge !== undefined && <PlanBridge age={planAge} goi={result.goi} />}
         <button
           type="button"
           onClick={onShare}

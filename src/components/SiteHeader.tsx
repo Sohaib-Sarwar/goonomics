@@ -1,5 +1,6 @@
-import { Info } from 'lucide-react'
+import { Info, Leaf } from 'lucide-react'
 import { MICROCOPY } from '../lib/copy/lines'
+import { tarnLink } from '../lib/tarn'
 import { Mascot } from './Mascot'
 import { Wordmark } from './Wordmark'
 
@@ -12,6 +13,12 @@ export function SiteHeader({ onInfo, onHome }: { onInfo: () => void; onHome: () 
           <Wordmark size="sm" withDescriptor={false} />
         </button>
         <div className="flex items-center gap-2">
+          <a href={tarnLink(null)} aria-label={MICROCOPY.monkLink} title={MICROCOPY.monkHint} className="press inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-sm text-muted hover:bg-raised hover:text-paper">
+            <Leaf size={17} aria-hidden />
+            <span aria-hidden className="hidden sm:inline">
+              {MICROCOPY.monkLink}
+            </span>
+          </a>
           <button type="button" onClick={onInfo} aria-label={MICROCOPY.infoButton} className="press inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-sm text-muted hover:bg-raised hover:text-paper">
             <Info size={17} aria-hidden />
             <span aria-hidden className="hidden sm:inline">

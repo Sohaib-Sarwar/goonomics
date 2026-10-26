@@ -192,6 +192,7 @@ export default function App() {
             onEdit={() => setScreen(2)}
             onRestart={restart}
             onReceipts={() => setReceipts({ open: true, science: true })}
+            planAge={audit.input.currentAge}
           />
           </Suspense>
         )}
